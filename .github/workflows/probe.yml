@@ -1,0 +1,12 @@
+name: Probe OpenRadioss location
+on:
+  push:
+    paths: [.github/workflows/probe.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for u in https://github.com/OpenRadioss/OpenRadioss https://github.com/OpenRadioss https://api.github.com/repos/OpenRadioss/OpenRadioss https://api.github.com/orgs/OpenRadioss/repos https://openradioss.org/ https://www.openradioss.org/download/ ; do
+            echo "== $u"; curl -sSL -o page -w "%{http_code} %{url_effective}\n" "$u"; head -c 1500 page | tr -s '\n' ; echo; done
+          curl -sSL https://openradioss.org/ | grep -oiE 'href="[^"]+"' | sort -u | head -60
