@@ -51,6 +51,19 @@ m = dict(case=a.case, core=info["core"], theta=info["theta"] if cored else None,
          CFE=MCF / PCF, IE_parts_J=float(IE), HE_parts_J=float(HE),
          hourglass_ratio=float(HE / max(IE, 1e-9)),
          EA_vs_IE_mismatch=float((EA[-1] - IE) / max(IE, 1e-9)))
+# occupant-relevant: deceleration of the impact mass (wall force / impactor mass), in g
+m_imp = info["mass_kg"]
+acc_g = F_ * 1000.0 / m_imp / 9.81
+def clip_peak(ms):  # highest average over any window of `ms` milliseconds (like the 3 ms clip)
+    cum = np.concatenate([[0], np.cumsum(0.5 * (acc_g[1:] + acc_g[:-1]) * np.diff(t_))])
+    if t_[-1] - t_[0] < ms: return float("nan")
+    k = np.searchsorted(t_, t_ + ms)
+    ok = k < len(t_)
+    return float(np.max((cum[k[ok]] - cum[ok]) / (t_[k[ok]] - t_[ok])))
+m["impactor_peak_decel_g"] = float(acc_g.max())
+m["impactor_peak_decel_3ms_g"] = clip_peak(3.0)
+m["impactor_mean_decel_g"] = float(MCF * 1000.0 / m_imp / 9.81)
+m["impactor_speed_at_eval_ms"] = float(-N[k_end, 5])
 # engine energy-balance error (column ERROR in the listing) up to the evaluation time
 import re
 errs = []

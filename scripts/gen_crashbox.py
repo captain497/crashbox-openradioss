@@ -34,6 +34,7 @@ p.add_argument("--stroke_frac", type=float, default=0.75)  # run until this crus
 p.add_argument("--tend", type=float, default=0.0)      # end time (ms); 0 = from stroke
 p.add_argument("--dt_cst", type=float, default=0.0)    # /DT/NODA/CST target (ms); 0 = off
 p.add_argument("--anim", type=int, default=1)
+p.add_argument("--ishell", type=int, default=24)    # 24 = QEPH
 p.add_argument("--out", default=".")
 a = p.parse_args()
 
@@ -185,7 +186,7 @@ def i10(*vals): return "".join(f"{int(x):10d}" for x in vals)
 B10, B20 = " " * 10, " " * 20
 def idlist(ids): return "\n".join(i10(*ids[k:k + 10]) for k in range(0, len(ids), 10))
 def prop(pid_, title, thick):
-    return (f"/PROP/SHELL/{pid_}\n{title}\n" + i10(24, 0, 0, 0, 0) + B10 + f20(0) + "\n" +
+    return (f"/PROP/SHELL/{pid_}\n{title}\n" + i10(a.ishell, 0, 0, 0, 0) + B10 + f20(0) + "\n" +
             f20(0, 0, 0, 0, 0) + "\n" + i10(5) + B10 + f20(thick, 0) + B10 + i10(1, 1, 0))
 
 deck = []
