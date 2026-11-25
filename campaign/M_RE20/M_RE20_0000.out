@@ -1,0 +1,2621 @@
+ M_RE20_0000.out
+************************************************************************
+**                                                                    **
+**                                                                    **
+**                        OpenRadioss Starter                         **
+**                                                                    **
+**            Non-linear Finite Element Analysis Software             **
+**                                                                    **
+**                                                                    **
+**                                                                    **
+**                    Linux 64 bits, GNU compiler                     **
+**                      Double Precision Version                      **
+**                                                                    **
+**                                                                    **
+**                                                                    **
+************************************************************************
+** OpenRadioss Software                                               **
+** COPYRIGHT (C) 1986-2026 Altair Engineering, Inc.                   **
+** Licensed under GNU Affero General Public License.                  **
+** See License file.                                                  **
+************************************************************************
+ 
+  
+ COMPUTATION HARDWARE DESCRIPTION
+  
+ HOSTNAME     CPU TYPE, FREQUENCY AND MEMORY
+ ip-10-0-138-116   Intel(R) Xeon(R) 6975P-C (x86_64), 3871 MHz,  15701 MB RAM,   3071 MB swap
+  
+ STACKSIZE  . . . . . . . . . . . . . . . . . . . . Unlimited
+ THREAD STACKSIZE . . . . . . . . . . . . . . . . . 400 mB
+ 
+************************************************************************
+
+
+************************************************************************
+* INPUT READING PROCESS
+************************************************************************
+
+ -NO SYNTAX ERROR DETECTED DURING INPUT READING PROCESS
+
+
+
+
+************************************************************************
+
+
+
+    UNIT SYSTEMS DEFINITION     
+    -----------------------     
+
+                                                          MASS                LENGTH              TIME
+    WORK UNIT SYSTEM . . . . . . ( g  , mm , ms  ) 1.0000000000000E-03 1.0000000000000E-03 1.0000000000000E-03
+    INPUT UNIT SYSTEM  . . . . . ( g  , mm , ms  ) 1.0000000000000E-03 1.0000000000000E-03 1.0000000000000E-03
+AA6061-T6 crash box, core=reentrant
+
+
+    CONTROL  PARAMETERS                                                                  
+    -------------------                                                                  
+
+    IPRI  : PRINTOUT FLAG . . . . . . . . . . . . . . . .         0
+    INVERS: MANUAL VERSION OF THIS INPUT DECK . . . . . .      2024
+    NSUBS:   NUMBER OF SUBSETS. . . . . . . . . . . . . .         1
+    NPART:   NUMBER OF PARTS. . . . . . . . . . . . . . .         2
+    NUMMAT: NUMBER OF MATERIALS . . . . . . . . . . . . .         1
+    NUMGEO: NUMBER OF PROPERTY SETS . . . . . . . . . . .         2
+    NUMNOD: NUMBER OF NODAL POINTS. . . . . . . . . . . .     39896
+    NUMSKW: NUMBER OF SKEW REFERENCE FRAMES . . . . . . .         0
+    NUMBCS: NUMBER OF BOUNDARY CONDITIONS . . . . . . . .         1
+    NUMFRAM: NUMBER OF REFERENCE FRAMES . . . . . . . . .         0
+    NUMELQ: NUMBER OF 2D QUAD ELEMENTS. . . . . . . . . .         0
+    NUMELT3 : NUMBER OF 2D TRIA ELEMENTS. . . . . . . . .         0
+    NUMELS: NUMBER OF 3D SOLID ELEMENTS . . . . . . . . .         0
+    NUMELC: NUMBER OF 3D SHELL ELEMENTS (4-NODES) . . . .     40800
+    NUMELT: NUMBER OF 3D TRUSS ELEMENTS . . . . . . . . .         0
+    NUMELP: NUMBER OF 3D BEAM  ELEMENTS . . . . . . . . .         0
+    NUMELR: NUMBER OF 3D SPRING ELEMENTS. . . . . . . . .         0
+    NUMELTG: NUMBER OF 3D SHELL ELEMENTS (3-NODES). . . .         0
+    NUMELX: NUMBER OF MULTIPURPOSE ELEMENTS . . . . . . .         0
+    NUMELIG3D: NUMBER OF ISO-GEOMETRIC ELEMENTS . . . . .         0
+    NUMSPH : NUMBER OF SMOOTH PARTICLES (SPH CELLS) . . .         0
+    NSPHBCS: NUMBER OF SPH SYMMETRY CONDITIONS. . . . . .         0
+    NSPHIO : NUMBER OF SPH INLET/OUTLET CONDITIONS. . . .         0
+
+    NFUNCT: NUMBER OF USER'S FUNCTIONS . . . . . . . . .          0
+    NGRAV:  NUMBER OF GRAVITY LOADS . . . . . . . . . . .         0
+    NFUNC2D:  NUMBER OF USER 2D FUNCTIONS . . . . . . . .         0
+    NINIGRV:NUMBER OF INITIAL GRAVITY LOADS . . . . . . .         0
+    NCONLD: NUMBER OF CONCENTRATED LOADS. . . . . . . . .         0
+    NINVEL: NUMBER OF INITIAL VELOCITIES. . . . . . . . .         0
+    NPRELD: NUMBER OF PRESSURE LOADS. . . . . . . . . . .         0
+    NINIMAP1D: NUMBER OF INITIAL 1D MAPPING.. . . . . . .         0
+    NINIMAP2D: NUMBER OF INITIAL 2D MAPPING.. . . . . . .         0
+    NUMBER OF ACCELEROMETERS. . . . . . . . . . . . . . .         0
+    NUMBER OF SENSORS . . . . . . . . . . . . . . . . . .         0
+    NUMBER OF GAUGES. . . . . . . . . . . . . . . . . . .         0
+    NINTER: NUMBER OF INTERFACES. . . . . . . . . . . . .         1
+    NRWALL: NUMBER OF RIGID WALLS . . . . . . . . . . . .         1
+    NRBODY: NUMBER OF RIGID BODIES. . . . . . . . . . . .         0
+    NFXBODY: NUMBER OF FLEXIBLE BODIES. . . . . . . . . .         0
+    NCONX : NUMBER OF RIGID LINKS TO MADYMO BODIES. . . .         0
+    NODMAS: NUMBER OF ADDED NODAL MASSES. . . . . . . . .         0
+    NIMPDISP: NUMBER OF IMPOSED DISPLACEMENTS . . . . . .         0
+    NIMPVEL: NUMBER OF IMPOSED VELOCITIES . . . . . . . .         0
+    NIMPACC: NUMBER OF IMPOSED ACCELERATIONS . . . . . .          0
+    NRIVET: NUMBER OF RIVETS OR SPOT WELDS. . . . . . . .         0
+    NSECT : NUMBER OF SECTIONS SAVED (TIME HISTORY PLOTS)         0
+    NJOINT: NUMBER OF JOINTS. . . . . . . . . . . . . . .         0
+    NACTIV: NUMBER OF ELEMENT DEACTIVATION GROUPS . . . .         0
+    NDAMP:  NUMBER OF RAYLEIGH DAMPING GROUPS . . . . . .         0
+    NGJOINT: NUMBER OF GEAR TYPE JOINTS . . . . . . . . .         0
+    NUMMPC: NUMBER OF MULTI-POINT CONSTRAINTS . . . . . .         0
+    NR2RLNK: NUMBER OF EXTERNAL COUPLING LINKS . . . . .          0
+    NSUBDOM: NUMBER OF SUBDOMAINS . . . . . .. . . . . .          0
+    NVOLU:  NUMBER OF MONITORED VOLUMES . . . . . . . . .         0
+    NEIG:   NUMBER OF EIGEN AND STATIC MODES PROBLEMS . .         0
+    NBEM:   NUMBER OF BEM SOLVED PROBLEMS . . . . . . . .         0
+    NRBE2:  NUMBER OF RBE2 RIGID ELEMENTS . . . . . . . .         0
+    NRBE3:  NUMBER OF RBE3 CONSTRAINT ELEMENTS  . . . . .         0
+    INITIAL STRESS FILE =
+                                          FLAG ISIGI. . .         0
+
+
+    N2D3D : ANALYSIS TYPE: 0=3D,1=AXISYM,2=PLANE STRAIN .         0
+
+
+    ANALYSIS OPTIONS
+    ----------------
+
+    INTEG8 : 8 GAUSS POINT CONDENSED INTEGRATION . . . . .         0
+    IPARITH: PARALLEL ARITHMETIC FLAG (2 OFF, 1 0N). . . .         1
+    IUSERW : GENERAL USER WINDOW FLAG. . . . . . . . . . .         0
+    ISOLID : DEFAULT BRICK FORMULATION FLAG. . . . . . . .         1
+    ITET4  : DEFAULT TETRA4 FORMULATION FLAG . . . . . . .         0
+    ITET10 : DEFAULT TETRA10 FORMULATION FLAG. . . . . . .      1000
+    ISMSTR : DEFAULT BRICK SMALL STRAIN FLAG . . . . . . .         0
+    ICPRE  : DEFAULT SOLID CONSTANT PRESSURE FLAG. . . . .         0
+    ISHELL : DEFAULT SHELL FORMULATION FLAG. . . . . . . .         1
+    ISST   : DEFAULT SHELL SMALL STRAIN FLAG . . . . . . .         0
+    ITHK   : DEFAULT SHELL THICKNESS VARIATION FLAG. . . .         0
+    IPLA   : DEFAULT PLANE STRESS PLASTICITY FLAG. . . . .         0
+    ISTR   : DEFAULT SHELL STRAIN COMPUTATION FLAG . . . .         1
+    ISHEA  : DEFAULT SHELL SHEAR COMPUTATION FLAG. . . . .         0
+    INSH   : SHELL INERTIA FLAG. . . . . . . . . . . . . .         0
+    ISH3N  : DEFAULT 3 NODE SHELL FORMULATION FLAG . . . .         2
+    NPTS   : SHELL PROPERTIES DEFAULT NUMBER OF           
+             INTEGRATION POINTS OR LAYERS. . . . . . . . .        -1
+    IFRAME : DEFAULT SOLID FRAME FORMULATION FLAG . . . .          1
+    IOFFSET: DEFAULT SHELL OFFSET FLAG. . . . . . . . . .          0
+    ICONTROL:DEFAULT SOLID DISTORTION CONTROL FLAG. . . .          0
+    ISHFRAM: LOCAL SHELL FRAME DEFINITION. . . . . . . . .         0
+
+
+    LAGRANGE MULTIPLIER OPTIONS
+    ---------------------------
+    LAGM_TOL:CONVERGENCE CRITERION. . . . . . . . . . . . 1.0000000000000E-11
+
+
+    NODAL MASS DISTRIBUTION FLAG . . . . . . . . .         0
+
+
+    SPEED PARAMETERS  
+    ----------------  
+
+    STARTER RUNNING ON. . . . . . . . . . . . . . . . . .         4 THREADS             
+    NUMBER OF SPMD DOMAINS. . . . . . . . . . . . . . . .         1
+    NUMBER OF THREADS PER DOMAIN. . . . . . . . . . . . .         4
+    ARCHITECTURE OPTIMIZATION . . . . . . . . . . . . . .        18, linux64             
+    SIZE OF ELEMENT BUFFER. . . . . . . . . . . . . . . .       128
+ 
+     INFO : OMP_NUM_THREADS SET, DEFAULT SETTING IGNORED
+  
+
+
+    MATERIAL LAWS
+    -------------
+    NUMBER OF MATERIALS. . . . . . . . . =         1
+
+
+
+
+     AA6061-T6
+     MATERIAL NUMBER . . . . . . . . . . . .=         1
+     MATERIAL LAW  . . . . . . . . . . . . . .= PLAS_JOHNS
+
+       ELASTIC PLASTIC LAW                   
+       -------------------                   
+
+
+     INITIAL DENSITY . . . . . . . . . . . .= 2.7000000000000E-03
+
+     YOUNG MODULUS . . . . . . . . . . . . .=  68850.00000000    
+     POISSON  RATIO. . . . . . . . . . . . .= 0.3300000000000    
+     SHEAR MODULUS . . . . . . . . . . . . .=  25883.45864662    
+
+
+     JOHNSON COOK MODEL :
+     YIELD COEFFICIENT A . . . . . . . . . .=  285.0000000000    
+     YIELD COEFFICIENT B . . . . . . . . . .=  199.0000000000    
+     YIELD COEFFICIENT N . . . . . . . . . .= 0.5320000000000    
+     EPS-MAX . . . . . . . . . . . . . . . .= 1.0000000000000E+20
+     SIG-MAX . . . . . . . . . . . . . . . .= 1.0000000000000E+20
+     ISO-KINEMATIC HARDENING FACTOR. . . . .=  0.000000000000    
+
+
+     FLAG FOR STRAIN RATE DEPENDENCY TYPE. .=         2
+        VP=1  EQUIVALENT PLASTIC STRAIN RATE
+        VP=2  TOTAL STRAIN RATE (DEFAULT)
+        VP=3  DEVIATORIC STRAIN RATE
+     STRAIN RATE COEFFICIENT CC. . . . . . .= 2.0000000000000E-03
+     REFERENCE STRAIN RATE . . . . . . . . .= 1.0000000000000E-03
+     FLAG FOR STRAIN RATE ON SIG-MAX . . . .=         1
+     SMOOTH STRAIN RATE OPTION . . . . . . .=         1
+     STRAIN RATE CUTTING FREQUENCY . . . . .=  10.00000000000    
+     TEMPERATURE EXPONENT. . . . . . . . . .=  1.000000000000    
+     MELTING TEMPERATURE K . . . . . . . . .= 1.0000000000000E+20
+     SPECIFIC HEAT Rho*Cp. . . . . . . . . .=  0.000000000000    
+     INITIAL TEMPERATURE K . . . . . . . . .=  300.0000000000    
+     MAXIMAL TEMPERATURE K . . . . . . . . .= 1.0000000000000E+20
+     PRESSURE CUTOFF IN TENSION. . . . . . .=-1.0000000000000E+20
+
+
+
+
+         PROPERTY SETS
+         -------------
+
+
+TUBE_SHELL                              
+     ISOTROPIC SHELL PROPERTY SET
+     PROPERTY SET NUMBER . . . . . . . . . .=         1
+     NUMBER OF INTEGRATION POINTS. . . . . .=         5
+     POST PROCESSING STRAIN FLAG . . . . . .=         1
+     SHELL THICKNESS . . . . . . . . . . . .=  2.000000000000    
+     SMALL STRAIN FLAG . . . . . . . . . . .=         2
+     SHELL FORMULATION FLAG. . . . . . . . .=        24
+     3NODE SHELL FORMULATION FLAG. . . . . .=         2
+     DRILLING D.O.F. FLAG  . . . . . . . . .=         0
+     PINCHING D.O.F. FLAG  . . . . . . . . .=         0
+     SHELL MEMBRANE DAMPING. . . . . . . . .=  0.000000000000    
+     SHELL NUMERICAL DAMPING . . . . . . . .= 1.5000000000000E-02
+     SHEAR AREA REDUCTION FACTOR . . . . . .= 0.8333333333333    
+     ELEMENT DELETION PARAMETER. . . . . . .= 0.9999990000000    
+      > 0.0 : FRACTION OF FAILED THICKNESS   
+      < 0.0 : FRACTION OF FAILED INTG. POINTS
+     SHEAR FORMULATION FLAG. . . . . . . . .=         0
+     THICKNESS VARIATION FLAG. . . . . . . .=         1
+     PLASTICITY FORMULATION FLAG . . . . . .=         1
+     SHELL OFFSET POSITION FLAG . . . . . . =         0
+
+
+CORE_SHELL                              
+     ISOTROPIC SHELL PROPERTY SET
+     PROPERTY SET NUMBER . . . . . . . . . .=         2
+     NUMBER OF INTEGRATION POINTS. . . . . .=         5
+     POST PROCESSING STRAIN FLAG . . . . . .=         1
+     SHELL THICKNESS . . . . . . . . . . . .= 0.8000000000000    
+     SMALL STRAIN FLAG . . . . . . . . . . .=         2
+     SHELL FORMULATION FLAG. . . . . . . . .=        24
+     3NODE SHELL FORMULATION FLAG. . . . . .=         2
+     DRILLING D.O.F. FLAG  . . . . . . . . .=         0
+     PINCHING D.O.F. FLAG  . . . . . . . . .=         0
+     SHELL MEMBRANE DAMPING. . . . . . . . .=  0.000000000000    
+     SHELL NUMERICAL DAMPING . . . . . . . .= 1.5000000000000E-02
+     SHEAR AREA REDUCTION FACTOR . . . . . .= 0.8333333333333    
+     ELEMENT DELETION PARAMETER. . . . . . .= 0.9999990000000    
+      > 0.0 : FRACTION OF FAILED THICKNESS   
+      < 0.0 : FRACTION OF FAILED INTG. POINTS
+     SHEAR FORMULATION FLAG. . . . . . . . .=         0
+     THICKNESS VARIATION FLAG. . . . . . . .=         1
+     PLASTICITY FORMULATION FLAG . . . . . .=         1
+     SHELL OFFSET POSITION FLAG . . . . . . =         0
+
+
+
+
+       PARTS
+       -----
+
+
+
+PART:         1,TUBE
+----
+     PROPERTY    :         1 (TYPE 01),TUBE_SHELL
+     MATERIAL    :         1 (LAW  02),AA6061-T6
+     SUBSET      :         0
+     FRAMEWORK   :         LAGRANGE
+     VIRT. THICKN:         0.000000000000    
+
+PART:         2,CORE
+----
+     PROPERTY    :         2 (TYPE 01),CORE_SHELL
+     MATERIAL    :         1 (LAW  02),AA6061-T6
+     SUBSET      :         0
+     FRAMEWORK   :         LAGRANGE
+     VIRT. THICKN:         0.000000000000    
+
+
+       HIERARCHICAL SUBSET ORGANIZATION
+       --------------------------------
+
+
+  
+  
+ SUBSET:         0,GLOBAL MODEL                                                                                                     
+ ~~~~~~
+  |
+  |________Part(s):         1,TUBE                                    
+                            2,CORE                                    
+
+
+     RANDOM NOISE       
+     ------------       
+        NODE GROUP           :          ALL NODES
+        MAXIMUM RANDOM NOISE :          XALEA =  1.0000000000000E-04
+
+     BOUNDARY CONDITIONS                                                                 
+     -------------------                                                                 
+       NODE  TRANS. ROTAT.         SKEW
+
+  
+ SPMD IS CHECKING FOR ELEMENT DELETION IN : 
+ M_RE20_0001.rad                                                                                              
+ 
+ DOMAIN DECOMPOSITION USING MULTILEVEL KWAY
+ ------------------------------------------
+ DOMAIN DECOMPOSITION OPTIMIZED FOR PARALLEL ARITHMETIC ON
+ DOMAIN DECOMPOSITION : OPTIMIZED FOR SKYLAKE PROCESSOR
+
+    INTERFACES               
+  --------------             
+
+
+
+   INTERFACE NUMBER :         1 SELF_CONTACT
+
+
+    TYPE==7   PARALLEL/AUTO IMPACTING           
+
+
+    BOUND. COND. DELETED AFTER IMPACT . . . . . IN X DIR       0
+       SECONDARY NODE  (1:YES 0:NO)                Y DIR       0
+                                                   Z DIR       0
+    STIFFNESS FACTOR. . . . . . . . . . . . . .   1.000000000000    
+    STIFFNESS FORMULATION. .  . . . . . . . . .                4
+ 2,3,4,5 : STIFFNESS IS COMPUTED FROM STIFFNESS ON MAIN SIDE
+                            AND STIFFNESS AT SECONDARY NODES
+    1000 : STIFFNESS IS COMPUTED FROM STIFFNESS ON MAIN SIDE
+    MINIMUM STIFFNESS. . . .  . . . . . . . . .   0.000000000000    
+    MAXIMUM STIFFNESS. . . .  . . . . . . . . .  1.0000000000000E+30
+    FRICTION FACTOR . . . . . . . . . . . . . .  0.1500000000000    
+    VARIABLE GAP FLAG . . . . . . . . . . . . .             1000
+    MINIMUM GAP . . . . . . . . . . . . . . . .  0.4000000000000    
+    MAXIMUM GAP (= 0. <=> NO MAXIMUM GAP) . . .  1.0000000000000E+30
+    %MESHSIZE TAKEN INTO ACCOUNT FOR            
+    CALCULATION OF MAXIMUM GAP(IGAP = 3). . . .   0.000000000000    
+    FLAGREMNODE : NOT CONSIDER NEIGHBORING      
+    NODES IN CASE OF ELEMENT SIZE < GAP VALUE .                1
+    DE-ACTIVATION FLAG IF CONFLICT W/ TYPE2 . .                3
+    GAP SCALE FACTOR. . . . . . . . . . . . . .   0.000000000000    
+    START TIME. . . . . . . . . . . . . . . . .   0.000000000000    
+    STOP TIME . . . . . . . . . . . . . . . . .  1.0000000000000E+30
+    BUCKET FACTOR . . . . . . . . . . . . . . .  0.2000000029802    
+    DE-ACTIVATION OF INITIAL PENETRATIONS . . .             1000
+    MAXIMUM INITIAL PENETRATION FACTOR. . . . .   0.000000000000    
+    CRITICAL DAMPING FACTOR . . . . . . . . . .  5.0000000000000E-02
+    FRICTION CRITICAL DAMPING FACTOR. . . . . .   1.000000000000    
+    QUADRATIC DAMPING FLAG. . . . . . . . . . .                0
+    FORMULATION LEVEL . . . . . . . . . . . . .                0
+    MEAN POSSIBLE NUMBER OF IMPACT/NODE . . . .                4
+
+    DELETION FLAG ON FAILURE OF MAIN ELEMENT (1:YES-ALL/2:YES-ANY) :  1000
+
+    FRICTION FORMULATION: TOTAL (VISCOUS) FORMULATION
+    FRICTION FILTERING FLAG. . . . . . . . .          0
+    FILTERING FACTOR . . . . . . . . . . . .   0.000000000000    
+
+    FRICTION MODEL 0 (Coulomb Law) :
+      FRICTION COEFFICIENT . . . . . . . . .  0.1500000000000    
+
+      SECONDARY SURFACE INPUT BY NODES
+      MAIN SURFACE INPUT BY SEGMENTS
+
+
+ INTERFACE NUMBER. . . . . . . . . . . . . .         1
+ INTERFACE TYPE. . . . . . . . . . . . . . .     7
+
+  POSSIBLE IMPACT NUMBER:           0  (<=           1 *NSN)
+      RIGID WALL DEFINITIONS 
+      ---------------------- 
+
+
+     RIGID WALL NUMBER. . . . .         1
+          RIGID WALL TYPE . . . . .         1
+          TYPE SLIDE/TIED/FRICTION.         1
+          NUMBER OF NODES . . . . .     39500
+          WALL NODE NUMBER. . . . .     39896
+          WALL MASS . . . . . . . .    5.5700E+05
+          WALL X-VELOCITY . . . . .     0.000    
+          WALL Y-VELOCITY . . . . .     0.000    
+          WALL Z-VELOCITY . . . . .    -15.28    
+
+     INFINITE WALL CHARACTERISTICS
+          POINT M . . . . . . . . . 1.0375976562500E-07 5.4208374023437E-05  200.5000296631    
+          NORMAL VECTOR . . . . . .-1.0375668772901E-07-5.4206766003837E-05-0.9999999985308    
+ 
+ --------------------------------------
+ NEW DOMAIN DECOMPOSITION FOR OPTIMIZATION
+ --------------------------------------
+ 
+ DOMAIN DECOMPOSITION USING MULTILEVEL KWAY
+ ------------------------------------------
+ DOMAIN DECOMPOSITION OPTIMIZED FOR PARALLEL ARITHMETIC ON
+ DOMAIN DECOMPOSITION : OPTIMIZED FOR SKYLAKE PROCESSOR
+
+    INTERFACES               
+  --------------             
+
+
+
+   INTERFACE NUMBER :         1 SELF_CONTACT
+
+
+    TYPE==7   PARALLEL/AUTO IMPACTING           
+
+
+    BOUND. COND. DELETED AFTER IMPACT . . . . . IN X DIR       0
+       SECONDARY NODE  (1:YES 0:NO)                Y DIR       0
+                                                   Z DIR       0
+    STIFFNESS FACTOR. . . . . . . . . . . . . .   1.000000000000    
+    STIFFNESS FORMULATION. .  . . . . . . . . .                4
+ 2,3,4,5 : STIFFNESS IS COMPUTED FROM STIFFNESS ON MAIN SIDE
+                            AND STIFFNESS AT SECONDARY NODES
+    1000 : STIFFNESS IS COMPUTED FROM STIFFNESS ON MAIN SIDE
+    MINIMUM STIFFNESS. . . .  . . . . . . . . .   0.000000000000    
+    MAXIMUM STIFFNESS. . . .  . . . . . . . . .  1.0000000000000E+30
+    FRICTION FACTOR . . . . . . . . . . . . . .  0.1500000000000    
+    VARIABLE GAP FLAG . . . . . . . . . . . . .             1000
+    MINIMUM GAP . . . . . . . . . . . . . . . .  0.4000000000000    
+    MAXIMUM GAP (= 0. <=> NO MAXIMUM GAP) . . .  1.0000000000000E+30
+    %MESHSIZE TAKEN INTO ACCOUNT FOR            
+    CALCULATION OF MAXIMUM GAP(IGAP = 3). . . .   0.000000000000    
+    FLAGREMNODE : NOT CONSIDER NEIGHBORING      
+    NODES IN CASE OF ELEMENT SIZE < GAP VALUE .                1
+    DE-ACTIVATION FLAG IF CONFLICT W/ TYPE2 . .                3
+    GAP SCALE FACTOR. . . . . . . . . . . . . .   0.000000000000    
+    START TIME. . . . . . . . . . . . . . . . .   0.000000000000    
+    STOP TIME . . . . . . . . . . . . . . . . .  1.0000000000000E+30
+    BUCKET FACTOR . . . . . . . . . . . . . . .  0.2000000029802    
+    DE-ACTIVATION OF INITIAL PENETRATIONS . . .             1000
+    MAXIMUM INITIAL PENETRATION FACTOR. . . . .   0.000000000000    
+    CRITICAL DAMPING FACTOR . . . . . . . . . .  5.0000000000000E-02
+    FRICTION CRITICAL DAMPING FACTOR. . . . . .   1.000000000000    
+    QUADRATIC DAMPING FLAG. . . . . . . . . . .                0
+    FORMULATION LEVEL . . . . . . . . . . . . .                0
+    MEAN POSSIBLE NUMBER OF IMPACT/NODE . . . .                4
+
+    DELETION FLAG ON FAILURE OF MAIN ELEMENT (1:YES-ALL/2:YES-ANY) :  1000
+
+    FRICTION FORMULATION: TOTAL (VISCOUS) FORMULATION
+    FRICTION FILTERING FLAG. . . . . . . . .          0
+    FILTERING FACTOR . . . . . . . . . . . .   0.000000000000    
+
+    FRICTION MODEL 0 (Coulomb Law) :
+      FRICTION COEFFICIENT . . . . . . . . .  0.1500000000000    
+
+      SECONDARY SURFACE INPUT BY NODES
+      MAIN SURFACE INPUT BY SEGMENTS
+
+
+ INTERFACE NUMBER. . . . . . . . . . . . . .         1
+ INTERFACE TYPE. . . . . . . . . . . . . . .     7
+
+  POSSIBLE IMPACT NUMBER:           0  (<=           1 *NSN)
+      RIGID WALL DEFINITIONS 
+      ---------------------- 
+
+
+     RIGID WALL NUMBER. . . . .         1
+          RIGID WALL TYPE . . . . .         1
+          TYPE SLIDE/TIED/FRICTION.         1
+          NUMBER OF NODES . . . . .     39500
+          WALL NODE NUMBER. . . . .     39896
+          WALL MASS . . . . . . . .    5.5700E+05
+          WALL X-VELOCITY . . . . .     0.000    
+          WALL Y-VELOCITY . . . . .     0.000    
+          WALL Z-VELOCITY . . . . .    -15.28    
+
+     INFINITE WALL CHARACTERISTICS
+          POINT M . . . . . . . . . 1.0375976562500E-07 5.4208374023437E-05  200.5000296631    
+          NORMAL VECTOR . . . . . .-1.0375668772901E-07-5.4206766003837E-05-0.9999999985308    
+
+
+
+ SHELL GROUP         1 VECTORIZATION CODE =    0
+ SHELL GROUP         2 VECTORIZATION CODE =    0
+ SHELL GROUP         3 VECTORIZATION CODE =    0
+ SHELL GROUP         4 VECTORIZATION CODE =    0
+ SHELL GROUP         5 VECTORIZATION CODE =    0
+ SHELL GROUP         6 VECTORIZATION CODE =    0
+ SHELL GROUP         7 VECTORIZATION CODE =    0
+ SHELL GROUP         8 VECTORIZATION CODE =    0
+ SHELL GROUP         9 VECTORIZATION CODE =    0
+ SHELL GROUP        10 VECTORIZATION CODE =    0
+ SHELL GROUP        11 VECTORIZATION CODE =    0
+ SHELL GROUP        12 VECTORIZATION CODE =    0
+ SHELL GROUP        13 VECTORIZATION CODE =    0
+ SHELL GROUP        14 VECTORIZATION CODE =    0
+ SHELL GROUP        15 VECTORIZATION CODE =    0
+ SHELL GROUP        16 VECTORIZATION CODE =    0
+ SHELL GROUP        17 VECTORIZATION CODE =    0
+ SHELL GROUP        18 VECTORIZATION CODE =    0
+ SHELL GROUP        19 VECTORIZATION CODE =    0
+ SHELL GROUP        20 VECTORIZATION CODE =    0
+ SHELL GROUP        21 VECTORIZATION CODE =    0
+ SHELL GROUP        22 VECTORIZATION CODE =    0
+ SHELL GROUP        23 VECTORIZATION CODE =    0
+ SHELL GROUP        24 VECTORIZATION CODE =    0
+ SHELL GROUP        25 VECTORIZATION CODE =    0
+ SHELL GROUP        26 VECTORIZATION CODE =    0
+ SHELL GROUP        27 VECTORIZATION CODE =    0
+ SHELL GROUP        28 VECTORIZATION CODE =    0
+ SHELL GROUP        29 VECTORIZATION CODE =    0
+ SHELL GROUP        30 VECTORIZATION CODE =    0
+ SHELL GROUP        31 VECTORIZATION CODE =    0
+ SHELL GROUP        32 VECTORIZATION CODE =    0
+ SHELL GROUP        33 VECTORIZATION CODE =    0
+ SHELL GROUP        34 VECTORIZATION CODE =    0
+ SHELL GROUP        35 VECTORIZATION CODE =    0
+ SHELL GROUP        36 VECTORIZATION CODE =    0
+ SHELL GROUP        37 VECTORIZATION CODE =    0
+ SHELL GROUP        38 VECTORIZATION CODE =    0
+ SHELL GROUP        39 VECTORIZATION CODE =    0
+ SHELL GROUP        40 VECTORIZATION CODE =    0
+ SHELL GROUP        41 VECTORIZATION CODE =    0
+ SHELL GROUP        42 VECTORIZATION CODE =    0
+ SHELL GROUP        43 VECTORIZATION CODE =    0
+ SHELL GROUP        44 VECTORIZATION CODE =    0
+ SHELL GROUP        45 VECTORIZATION CODE =    0
+ SHELL GROUP        46 VECTORIZATION CODE =    0
+ SHELL GROUP        47 VECTORIZATION CODE =    0
+ SHELL GROUP        48 VECTORIZATION CODE =    0
+ SHELL GROUP        49 VECTORIZATION CODE =    0
+ SHELL GROUP        50 VECTORIZATION CODE =    0
+ SHELL GROUP        51 VECTORIZATION CODE =    0
+ SHELL GROUP        52 VECTORIZATION CODE =    0
+ SHELL GROUP        53 VECTORIZATION CODE =    0
+ SHELL GROUP        54 VECTORIZATION CODE =    0
+ SHELL GROUP        55 VECTORIZATION CODE =    0
+ SHELL GROUP        56 VECTORIZATION CODE =    0
+ SHELL GROUP        57 VECTORIZATION CODE =    0
+ SHELL GROUP        58 VECTORIZATION CODE =    0
+ SHELL GROUP        59 VECTORIZATION CODE =    0
+ SHELL GROUP        60 VECTORIZATION CODE =    0
+ SHELL GROUP        61 VECTORIZATION CODE =    0
+ SHELL GROUP        62 VECTORIZATION CODE =    0
+ SHELL GROUP        63 VECTORIZATION CODE =    0
+ SHELL GROUP        64 VECTORIZATION CODE =    0
+ SHELL GROUP        65 VECTORIZATION CODE =    0
+ SHELL GROUP        66 VECTORIZATION CODE =    0
+ SHELL GROUP        67 VECTORIZATION CODE =    0
+ SHELL GROUP        68 VECTORIZATION CODE =    0
+ SHELL GROUP        69 VECTORIZATION CODE =    0
+ SHELL GROUP        70 VECTORIZATION CODE =    0
+ SHELL GROUP        71 VECTORIZATION CODE =    0
+ SHELL GROUP        72 VECTORIZATION CODE =    0
+ SHELL GROUP        73 VECTORIZATION CODE =    0
+ SHELL GROUP        74 VECTORIZATION CODE =    0
+ SHELL GROUP        75 VECTORIZATION CODE =    0
+ SHELL GROUP        76 VECTORIZATION CODE =    0
+ SHELL GROUP        77 VECTORIZATION CODE =    0
+ SHELL GROUP        78 VECTORIZATION CODE =    0
+ SHELL GROUP        79 VECTORIZATION CODE =    0
+ SHELL GROUP        80 VECTORIZATION CODE =    0
+ SHELL GROUP        81 VECTORIZATION CODE =    0
+ SHELL GROUP        82 VECTORIZATION CODE =    0
+ SHELL GROUP        83 VECTORIZATION CODE =    0
+ SHELL GROUP        84 VECTORIZATION CODE =    0
+ SHELL GROUP        85 VECTORIZATION CODE =    0
+ SHELL GROUP        86 VECTORIZATION CODE =    0
+ SHELL GROUP        87 VECTORIZATION CODE =    0
+ SHELL GROUP        88 VECTORIZATION CODE =    0
+ SHELL GROUP        89 VECTORIZATION CODE =    0
+ SHELL GROUP        90 VECTORIZATION CODE =    0
+ SHELL GROUP        91 VECTORIZATION CODE =    0
+ SHELL GROUP        92 VECTORIZATION CODE =    0
+ SHELL GROUP        93 VECTORIZATION CODE =    0
+ SHELL GROUP        94 VECTORIZATION CODE =    0
+ SHELL GROUP        95 VECTORIZATION CODE =    0
+ SHELL GROUP        96 VECTORIZATION CODE =    0
+ SHELL GROUP        97 VECTORIZATION CODE =    0
+ SHELL GROUP        98 VECTORIZATION CODE =    0
+ SHELL GROUP        99 VECTORIZATION CODE =    0
+ SHELL GROUP       100 VECTORIZATION CODE =    0
+ SHELL GROUP       101 VECTORIZATION CODE =    0
+ SHELL GROUP       102 VECTORIZATION CODE =    0
+ SHELL GROUP       103 VECTORIZATION CODE =    0
+ SHELL GROUP       104 VECTORIZATION CODE =    0
+ SHELL GROUP       105 VECTORIZATION CODE =    0
+ SHELL GROUP       106 VECTORIZATION CODE =    0
+ SHELL GROUP       107 VECTORIZATION CODE =    0
+ SHELL GROUP       108 VECTORIZATION CODE =    0
+ SHELL GROUP       109 VECTORIZATION CODE =    0
+ SHELL GROUP       110 VECTORIZATION CODE =    0
+ SHELL GROUP       111 VECTORIZATION CODE =    0
+ SHELL GROUP       112 VECTORIZATION CODE =    0
+ SHELL GROUP       113 VECTORIZATION CODE =    0
+ SHELL GROUP       114 VECTORIZATION CODE =    0
+ SHELL GROUP       115 VECTORIZATION CODE =    0
+ SHELL GROUP       116 VECTORIZATION CODE =    0
+ SHELL GROUP       117 VECTORIZATION CODE =    0
+ SHELL GROUP       118 VECTORIZATION CODE =    0
+ SHELL GROUP       119 VECTORIZATION CODE =    0
+ SHELL GROUP       120 VECTORIZATION CODE =    0
+ SHELL GROUP       121 VECTORIZATION CODE =    0
+ SHELL GROUP       122 VECTORIZATION CODE =    0
+ SHELL GROUP       123 VECTORIZATION CODE =    0
+ SHELL GROUP       124 VECTORIZATION CODE =    0
+ SHELL GROUP       125 VECTORIZATION CODE =    0
+ SHELL GROUP       126 VECTORIZATION CODE =    0
+ SHELL GROUP       127 VECTORIZATION CODE =    0
+ SHELL GROUP       128 VECTORIZATION CODE =    9
+ SHELL GROUP       129 VECTORIZATION CODE =   15
+ SHELL GROUP       130 VECTORIZATION CODE =   15
+ SHELL GROUP       131 VECTORIZATION CODE =   15
+ SHELL GROUP       132 VECTORIZATION CODE =   15
+ SHELL GROUP       133 VECTORIZATION CODE =   15
+ SHELL GROUP       134 VECTORIZATION CODE =   15
+ SHELL GROUP       135 VECTORIZATION CODE =   15
+ SHELL GROUP       136 VECTORIZATION CODE =   15
+ SHELL GROUP       137 VECTORIZATION CODE =   15
+ SHELL GROUP       138 VECTORIZATION CODE =   15
+ SHELL GROUP       139 VECTORIZATION CODE =   15
+ SHELL GROUP       140 VECTORIZATION CODE =   15
+ SHELL GROUP       141 VECTORIZATION CODE =   15
+ SHELL GROUP       142 VECTORIZATION CODE =   15
+ SHELL GROUP       143 VECTORIZATION CODE =   15
+ SHELL GROUP       144 VECTORIZATION CODE =   15
+ SHELL GROUP       145 VECTORIZATION CODE =   15
+ SHELL GROUP       146 VECTORIZATION CODE =    9
+ SHELL GROUP       147 VECTORIZATION CODE =   15
+ SHELL GROUP       148 VECTORIZATION CODE =    9
+ SHELL GROUP       149 VECTORIZATION CODE =   15
+ SHELL GROUP       150 VECTORIZATION CODE =   15
+ SHELL GROUP       151 VECTORIZATION CODE =   15
+ SHELL GROUP       152 VECTORIZATION CODE =    9
+ SHELL GROUP       153 VECTORIZATION CODE =   15
+ SHELL GROUP       154 VECTORIZATION CODE =    6
+ SHELL GROUP       155 VECTORIZATION CODE =   15
+ SHELL GROUP       156 VECTORIZATION CODE =   15
+ SHELL GROUP       157 VECTORIZATION CODE =   15
+ SHELL GROUP       158 VECTORIZATION CODE =   15
+ SHELL GROUP       159 VECTORIZATION CODE =   15
+ SHELL GROUP       160 VECTORIZATION CODE =   15
+ SHELL GROUP       161 VECTORIZATION CODE =   15
+ SHELL GROUP       162 VECTORIZATION CODE =   15
+ SHELL GROUP       163 VECTORIZATION CODE =   15
+ SHELL GROUP       164 VECTORIZATION CODE =    9
+ SHELL GROUP       165 VECTORIZATION CODE =   15
+ SHELL GROUP       166 VECTORIZATION CODE =   15
+ SHELL GROUP       167 VECTORIZATION CODE =   15
+ SHELL GROUP       168 VECTORIZATION CODE =   15
+ SHELL GROUP       169 VECTORIZATION CODE =   15
+ SHELL GROUP       170 VECTORIZATION CODE =    9
+ SHELL GROUP       171 VECTORIZATION CODE =   15
+ SHELL GROUP       172 VECTORIZATION CODE =    9
+ SHELL GROUP       173 VECTORIZATION CODE =   15
+ SHELL GROUP       174 VECTORIZATION CODE =   15
+ SHELL GROUP       175 VECTORIZATION CODE =    0
+ SHELL GROUP       176 VECTORIZATION CODE =   15
+ SHELL GROUP       177 VECTORIZATION CODE =   15
+ SHELL GROUP       178 VECTORIZATION CODE =    9
+ SHELL GROUP       179 VECTORIZATION CODE =   15
+ SHELL GROUP       180 VECTORIZATION CODE =   15
+ SHELL GROUP       181 VECTORIZATION CODE =   15
+ SHELL GROUP       182 VECTORIZATION CODE =   15
+ SHELL GROUP       183 VECTORIZATION CODE =    0
+ SHELL GROUP       184 VECTORIZATION CODE =   15
+ SHELL GROUP       185 VECTORIZATION CODE =   15
+ SHELL GROUP       186 VECTORIZATION CODE =    6
+ SHELL GROUP       187 VECTORIZATION CODE =   15
+ SHELL GROUP       188 VECTORIZATION CODE =   15
+ SHELL GROUP       189 VECTORIZATION CODE =    6
+ SHELL GROUP       190 VECTORIZATION CODE =   15
+ SHELL GROUP       191 VECTORIZATION CODE =   15
+ SHELL GROUP       192 VECTORIZATION CODE =    0
+ SHELL GROUP       193 VECTORIZATION CODE =   15
+ SHELL GROUP       194 VECTORIZATION CODE =   15
+ SHELL GROUP       195 VECTORIZATION CODE =    9
+ SHELL GROUP       196 VECTORIZATION CODE =    9
+ SHELL GROUP       197 VECTORIZATION CODE =   15
+ SHELL GROUP       198 VECTORIZATION CODE =   15
+ SHELL GROUP       199 VECTORIZATION CODE =    0
+ SHELL GROUP       200 VECTORIZATION CODE =   15
+ SHELL GROUP       201 VECTORIZATION CODE =   15
+ SHELL GROUP       202 VECTORIZATION CODE =   15
+ SHELL GROUP       203 VECTORIZATION CODE =    0
+ SHELL GROUP       204 VECTORIZATION CODE =   15
+ SHELL GROUP       205 VECTORIZATION CODE =   15
+ SHELL GROUP       206 VECTORIZATION CODE =    9
+ SHELL GROUP       207 VECTORIZATION CODE =    0
+ SHELL GROUP       208 VECTORIZATION CODE =   15
+ SHELL GROUP       209 VECTORIZATION CODE =   15
+ SHELL GROUP       210 VECTORIZATION CODE =    0
+ SHELL GROUP       211 VECTORIZATION CODE =    0
+ SHELL GROUP       212 VECTORIZATION CODE =   15
+ SHELL GROUP       213 VECTORIZATION CODE =   15
+ SHELL GROUP       214 VECTORIZATION CODE =    0
+ SHELL GROUP       215 VECTORIZATION CODE =    0
+ SHELL GROUP       216 VECTORIZATION CODE =   15
+ SHELL GROUP       217 VECTORIZATION CODE =   15
+ SHELL GROUP       218 VECTORIZATION CODE =    6
+ SHELL GROUP       219 VECTORIZATION CODE =    9
+ SHELL GROUP       220 VECTORIZATION CODE =   15
+ SHELL GROUP       221 VECTORIZATION CODE =   15
+ SHELL GROUP       222 VECTORIZATION CODE =    9
+ SHELL GROUP       223 VECTORIZATION CODE =   15
+ SHELL GROUP       224 VECTORIZATION CODE =   15
+ SHELL GROUP       225 VECTORIZATION CODE =   15
+ SHELL GROUP       226 VECTORIZATION CODE =   15
+ SHELL GROUP       227 VECTORIZATION CODE =   15
+ SHELL GROUP       228 VECTORIZATION CODE =   15
+ SHELL GROUP       229 VECTORIZATION CODE =   15
+ SHELL GROUP       230 VECTORIZATION CODE =   15
+ SHELL GROUP       231 VECTORIZATION CODE =   15
+ SHELL GROUP       232 VECTORIZATION CODE =   15
+ SHELL GROUP       233 VECTORIZATION CODE =   15
+ SHELL GROUP       234 VECTORIZATION CODE =   15
+ SHELL GROUP       235 VECTORIZATION CODE =   15
+ SHELL GROUP       236 VECTORIZATION CODE =   15
+ SHELL GROUP       237 VECTORIZATION CODE =   15
+ SHELL GROUP       238 VECTORIZATION CODE =    9
+ SHELL GROUP       239 VECTORIZATION CODE =   15
+ SHELL GROUP       240 VECTORIZATION CODE =   15
+ SHELL GROUP       241 VECTORIZATION CODE =   15
+ SHELL GROUP       242 VECTORIZATION CODE =   15
+ SHELL GROUP       243 VECTORIZATION CODE =   15
+ SHELL GROUP       244 VECTORIZATION CODE =   15
+ SHELL GROUP       245 VECTORIZATION CODE =   15
+ SHELL GROUP       246 VECTORIZATION CODE =   15
+ SHELL GROUP       247 VECTORIZATION CODE =   15
+ SHELL GROUP       248 VECTORIZATION CODE =   15
+ SHELL GROUP       249 VECTORIZATION CODE =   15
+ SHELL GROUP       250 VECTORIZATION CODE =   15
+ SHELL GROUP       251 VECTORIZATION CODE =   15
+ SHELL GROUP       252 VECTORIZATION CODE =   15
+ SHELL GROUP       253 VECTORIZATION CODE =   15
+ SHELL GROUP       254 VECTORIZATION CODE =   15
+ SHELL GROUP       255 VECTORIZATION CODE =    9
+ SHELL GROUP       256 VECTORIZATION CODE =   15
+ SHELL GROUP       257 VECTORIZATION CODE =   15
+ SHELL GROUP       258 VECTORIZATION CODE =   15
+ SHELL GROUP       259 VECTORIZATION CODE =   15
+ SHELL GROUP       260 VECTORIZATION CODE =   15
+ SHELL GROUP       261 VECTORIZATION CODE =   15
+ SHELL GROUP       262 VECTORIZATION CODE =   15
+ SHELL GROUP       263 VECTORIZATION CODE =   15
+ SHELL GROUP       264 VECTORIZATION CODE =   15
+ SHELL GROUP       265 VECTORIZATION CODE =   15
+ SHELL GROUP       266 VECTORIZATION CODE =   15
+ SHELL GROUP       267 VECTORIZATION CODE =   15
+ SHELL GROUP       268 VECTORIZATION CODE =   15
+ SHELL GROUP       269 VECTORIZATION CODE =   15
+ SHELL GROUP       270 VECTORIZATION CODE =   15
+ SHELL GROUP       271 VECTORIZATION CODE =   15
+ SHELL GROUP       272 VECTORIZATION CODE =   15
+ SHELL GROUP       273 VECTORIZATION CODE =   15
+ SHELL GROUP       274 VECTORIZATION CODE =   15
+ SHELL GROUP       275 VECTORIZATION CODE =   15
+ SHELL GROUP       276 VECTORIZATION CODE =   15
+ SHELL GROUP       277 VECTORIZATION CODE =   15
+ SHELL GROUP       278 VECTORIZATION CODE =   15
+ SHELL GROUP       279 VECTORIZATION CODE =   15
+ SHELL GROUP       280 VECTORIZATION CODE =   15
+ SHELL GROUP       281 VECTORIZATION CODE =   15
+ SHELL GROUP       282 VECTORIZATION CODE =   15
+ SHELL GROUP       283 VECTORIZATION CODE =   15
+ SHELL GROUP       284 VECTORIZATION CODE =   15
+ SHELL GROUP       285 VECTORIZATION CODE =   15
+ SHELL GROUP       286 VECTORIZATION CODE =   15
+ SHELL GROUP       287 VECTORIZATION CODE =   15
+ SHELL GROUP       288 VECTORIZATION CODE =   15
+ SHELL GROUP       289 VECTORIZATION CODE =   15
+ SHELL GROUP       290 VECTORIZATION CODE =   15
+ SHELL GROUP       291 VECTORIZATION CODE =   15
+ SHELL GROUP       292 VECTORIZATION CODE =   15
+ SHELL GROUP       293 VECTORIZATION CODE =   15
+ SHELL GROUP       294 VECTORIZATION CODE =   15
+ SHELL GROUP       295 VECTORIZATION CODE =   15
+ SHELL GROUP       296 VECTORIZATION CODE =   15
+ SHELL GROUP       297 VECTORIZATION CODE =   15
+ SHELL GROUP       298 VECTORIZATION CODE =   15
+ SHELL GROUP       299 VECTORIZATION CODE =   15
+ SHELL GROUP       300 VECTORIZATION CODE =   15
+ SHELL GROUP       301 VECTORIZATION CODE =   15
+ SHELL GROUP       302 VECTORIZATION CODE =   15
+ SHELL GROUP       303 VECTORIZATION CODE =   15
+ SHELL GROUP       304 VECTORIZATION CODE =   15
+ SHELL GROUP       305 VECTORIZATION CODE =   15
+ SHELL GROUP       306 VECTORIZATION CODE =   15
+ SHELL GROUP       307 VECTORIZATION CODE =   15
+ SHELL GROUP       308 VECTORIZATION CODE =   15
+ SHELL GROUP       309 VECTORIZATION CODE =   15
+ SHELL GROUP       310 VECTORIZATION CODE =   15
+ SHELL GROUP       311 VECTORIZATION CODE =   15
+ SHELL GROUP       312 VECTORIZATION CODE =   15
+ SHELL GROUP       313 VECTORIZATION CODE =   15
+ SHELL GROUP       314 VECTORIZATION CODE =   15
+ SHELL GROUP       315 VECTORIZATION CODE =   15
+ SHELL GROUP       316 VECTORIZATION CODE =   15
+ SHELL GROUP       317 VECTORIZATION CODE =   15
+ SHELL GROUP       318 VECTORIZATION CODE =   15
+ SHELL GROUP       319 VECTORIZATION CODE =   15
+ SHELL GROUP       320 VECTORIZATION CODE =    9
+-------------------
+
+
+PART :          1, TUBE
+            Mass             Ixx             Iyy             Izz             Ixy             Iyz             Izx
+  3.45599987E+02  1.52121310E+06  1.52121521E+06  7.37737889E+05  3.11374015E-02  3.58419752E-02  7.63880684E-02
+               X               Y               Z     Kin. Energy              Vx              Vy              Vz
+ -2.85511853E-06 -2.22189893E-06  1.00000001E+02  0.00000000E+00  0.00000000E+00  0.00000000E+00  0.00000000E+00
+
+PART :          2, CORE
+            Mass             Ixx             Iyy             Izz             Ixy             Iyz             Izx
+  2.12433256E+02  8.14487458E+05  8.03395730E+05  2.01296056E+05 -7.61947789E-03 -1.08030519E-02 -1.90423615E-02
+               X               Y               Z     Kin. Energy              Vx              Vy              Vz
+  4.18747872E-07  1.84829394E-01  1.00000004E+02  0.00000000E+00  0.00000000E+00  0.00000000E+00  0.00000000E+00
+
+
+PART ELEMENT/MATERIAL PARAMETER REVIEW:
+-----------------------
+
+Part id,name:         1 TUBE                   Mat type:   2 Elm type: SHELL-4nodes           
+----
+  Ishell  Ismstr   Idril     NPT    ITHK   IPLAS    IPOS
+      24       2       2       5       1       1       0
+--      hm        hf        hr        dm        dn
+    0.0000    0.0000    0.0000    0.0150    0.0150
+
+Part id,name:         2 CORE                   Mat type:   2 Elm type: SHELL-4nodes           
+----
+  Ishell  Ismstr   Idril     NPT    ITHK   IPLAS    IPOS
+      24       2       2       5       1       1       0
+--      hm        hf        hr        dm        dn
+    0.0000    0.0000    0.0000    0.0150    0.0150
+
+
+
+     TOTAL MASS AND MASS CENTER
+     --------------------------
+                     MASS                    X                    Y                    Z
+
+       557558.0332433      1.0204572998292E-07  1.2457394978834E-04   200.3994439787    
+
+
+     TOTAL INERTIA
+     -------------
+                      IXX                  IYY                  IZZ                  IXY                  IYZ                  IZX
+       7966345.092304       7955248.225067       939041.1951810      2.3505434337024E-02   3938.985420545     -3.8603463992128E-02
+
+
+
+      ADDED NODAL NON-STRUCTURAL MASSES 
+     -----------------------------------
+
+      TOTAL ADDED MASS =   0.000000000000    
+
+
+ 
+
+         SHELL ELEMENTS TIME STEP
+         ------------------------
+
+      TIME STEP       ELEMENT NUMBER
+  1.7864509813128E-04           5149
+  1.7864679805890E-04           7690
+  1.7864686872324E-04           4987
+  1.7864848298838E-04          15142
+  1.7864940034755E-04           8227
+  1.7864954051471E-04          10333
+  1.7865103608205E-04           4015
+  1.7865219694049E-04          11416
+  1.7865277246559E-04           4612
+  1.7865341625703E-04           5098
+  1.7865342206807E-04          13846
+  1.7865386535995E-04           6121
+  1.7865557778149E-04          10171
+  1.7865657315617E-04          12874
+  1.7865674380664E-04           1261
+  1.7865693863424E-04           8389
+  1.7865726643349E-04           4774
+  1.7865813168507E-04          14008
+  1.7865880695158E-04          16114
+  1.7865881850478E-04           4288
+  1.7865895785769E-04          11092
+  1.7865980483057E-04          12712
+  1.7865994924756E-04          12763
+  1.7865998064361E-04          10930
+  1.7866002447579E-04           2182
+  1.7866012933151E-04           4177
+  1.7866025564755E-04          13684
+  1.7866105651427E-04           8065
+  1.7866113544874E-04           2992
+  1.7866119771929E-04           5746
+  1.7866121012480E-04           2557
+  1.7866124603380E-04           1423
+  1.7866151740814E-04           4450
+  1.7866228310449E-04          10657
+  1.7866238562190E-04           2830
+  1.7866274352376E-04           5959
+  1.7866322305070E-04           9148
+  1.7866354967811E-04           2668
+  1.7866372561542E-04          14869
+  1.7866401304240E-04           7852
+  1.7866406934793E-04           1909
+  1.7866436254378E-04          11578
+  1.7866438947974E-04          14980
+  1.7866446012259E-04          10495
+  1.7866476205864E-04          12601
+  1.7866573880447E-04           5584
+  1.7866574520598E-04           6769
+  1.7866578682078E-04          13360
+  1.7866601464805E-04          12550
+  1.7866618092878E-04          13198
+  1.7866628219349E-04           1747
+  1.7866646428702E-04            724
+  1.7866647501274E-04           2020
+  1.7866650163479E-04          12388
+  1.7866664472355E-04           2344
+  1.7866694401942E-04           7903
+  1.7866697533493E-04           5260
+  1.7866712991103E-04           3964
+  1.7866717905384E-04          13522
+  1.7866729562205E-04           4936
+  1.7866747875052E-04           6283
+  1.7866753034248E-04           8551
+  1.7866761728122E-04           9523
+  1.7866776721618E-04           3853
+  1.7866794346759E-04          11254
+  1.7866849025324E-04           2719
+  1.7866861052650E-04          12925
+  1.7866861839202E-04            613
+  1.7866873974941E-04           6232
+  1.7866951732474E-04           4339
+  1.7866953585337E-04           8338
+  1.7866967244115E-04           4501
+  1.7866970351020E-04           8986
+  1.7866979775840E-04           8713
+  1.7866996638479E-04           6931
+  1.7867001630294E-04          10282
+  1.7867008604590E-04           4126
+  1.7867015854894E-04           1534
+  1.7867035491289E-04           1210
+  1.7867039872196E-04           5311
+  1.7867055232059E-04          13249
+  1.7867061635197E-04           7528
+  1.7867077653601E-04          15304
+  1.7867079728549E-04           6070
+  1.7867082173315E-04           9037
+  1.7867092768589E-04           2395
+  1.7867092837063E-04          11791
+  1.7867098740266E-04           3367
+  1.7867099456330E-04          14170
+  1.7867104781687E-04           5635
+  1.7867145887238E-04           2071
+  1.7867161930825E-04           5473
+  1.7867178727599E-04          12226
+  1.7867180528789E-04           6607
+  1.7867190195130E-04          15031
+  1.7867201964773E-04          10819
+  1.7867213935372E-04           3529
+  1.7867256193604E-04          14383
+  1.7867256337880E-04          13087
+  1.7867260163505E-04           7204
+  1.7867276224513E-04           8176
+  1.7867285484624E-04           6445
+  1.7867288544582E-04          11953
+  1.7867306849889E-04          13036
+  1.7867349614492E-04           7417
+  1.7867350521768E-04            127
+  1.7867364185421E-04           7741
+  1.7867428306548E-04          15628
+  1.7867437646420E-04           3154
+  1.7867448930884E-04            238
+  1.7867484876951E-04           1372
+  1.7867493082008E-04           8824
+  1.7867557304943E-04          13735
+  1.7867558339008E-04          10120
+  1.7867579460186E-04           7255
+  1.7867581076329E-04           3802
+  1.7867586082280E-04          15952
+  1.7867655895262E-04          13897
+  1.7867663102582E-04           2881
+  1.7867691936534E-04          15679
+  1.7867709859683E-04          11143
+  1.7867766700097E-04          15517
+  1.7867778803943E-04           9310
+  1.7867796838847E-04          15790
+  1.7867808306062E-04             76
+  1.7867814985031E-04           9361
+  1.7867822974617E-04           3640
+  1.7867826529651E-04            886
+  1.7867833413206E-04           8014
+  1.7867844802440E-04           7093
+  1.7867857547210E-04          12439
+  1.7867873496304E-04           2233
+  1.7867873565450E-04           3691
+  1.7867880039898E-04           6394
+  1.7867883023007E-04          10768
+  1.7867885186314E-04          10444
+  1.7867893117240E-04           6718
+  1.7867926547727E-04           6556
+  1.7867934701177E-04           8875
+  1.7867954394664E-04           8500
+  1.7867973979351E-04           9472
+  1.7868045892348E-04           7366
+  1.7868046902370E-04          11305
+  1.7868084403205E-04           1585
+  1.7868102223274E-04           9199
+  1.7868103199746E-04           4825
+  1.7868125084966E-04          14707
+  1.7868167173246E-04          15466
+  1.7868181679111E-04           3478
+  1.7868189500215E-04           7579
+  1.7868193704170E-04            562
+  1.7868235231703E-04           3205
+  1.7868270868367E-04          10981
+  1.7868289802216E-04          16165
+  1.7868319633134E-04            775
+  1.7868334891210E-04          12064
+  1.7868344588569E-04          16003
+  1.7868355910313E-04           5422
+  1.7868360565549E-04          10009
+  1.7868370650467E-04           1696
+  1.7868372803530E-04            400
+  1.7868413725541E-04           5908
+  1.7868455519640E-04           9634
+  1.7868474069061E-04           7042
+  1.7868482760871E-04           1048
+  1.7868484747498E-04           1099
+  1.7868496507898E-04          10606
+  1.7868508407802E-04           2506
+  1.7868525984423E-04          15193
+  1.7868528412791E-04          14221
+  1.7868577041869E-04          14059
+  1.7868579019307E-04            289
+  1.7868580070298E-04           9685
+  1.7868588086034E-04          15355
+  1.7868593599400E-04          13573
+  1.7868606680044E-04            451
+  1.7868610044777E-04           3043
+  1.7868613095726E-04            937
+  1.7868650383633E-04           9796
+  1.7868676356839E-04          12277
+  1.7868700491136E-04          13411
+  1.7868776353358E-04          14545
+  1.7868855639981E-04           1858
+  1.7868872023139E-04           6880
+  1.7868943970649E-04          15841
+  1.7869005099604E-04           4663
+  1.7869150106203E-04          11740
+  1.7869163927232E-04          11902
+  1.7869178831601E-04          11629
+  1.7869229899929E-04          12115
+  1.7869258928167E-04          14818
+  1.7869302982027E-04           9958
+  1.7869431505945E-04           5797
+  1.7869753943153E-04           3316
+  1.7869785379890E-04          14494
+  1.7869802975694E-04           8662
+  1.7869854354953E-04           9847
+  1.7869963279223E-04          11467
+  1.7869973884871E-04          14332
+  1.7870184171742E-04          14656
+  2.1539920732505E-04          15356
+  2.1539982573383E-04          14655
+  2.1540118636440E-04           6879
+  2.1540171953788E-04           6069
+  2.1540241005722E-04          14493
+  2.1540377799709E-04           8499
+  2.1540496189638E-04           4502
+  2.1540626772402E-04           8661
+  2.1540757456850E-04          13197
+  2.1540765330275E-04           5798
+  2.1540769392096E-04           9848
+  2.1540787031555E-04          15518
+  2.1540846469767E-04          11468
+  2.1540884610123E-04           7580
+  2.1540891550673E-04           5636
+  2.1540901226459E-04           9147
+  2.1540903119527E-04           3206
+  2.1540957512718E-04          16166
+  2.1540968133780E-04            776
+  2.1540987946926E-04            723
+  2.1541006494786E-04           7418
+  2.1541070090851E-04          16113
+  2.1541095636326E-04          10982
+  2.1541107843790E-04           9309
+  2.1541112642261E-04           3639
+  2.1541183049142E-04          15951
+  2.1541206622925E-04           3044
+  2.1541208200231E-04           6393
+  2.1541223170877E-04           4125
+  2.1541240229514E-04          10119
+  2.1541245222737E-04          15032
+  2.1541245408443E-04          14817
+  2.1541250945890E-04          14870
+  2.1541269178320E-04           3153
+  2.1541269518915E-04          10767
+  2.1541284659939E-04          15194
+  2.1541333201527E-04          13683
+  2.1541375310002E-04          10929
+  2.1541385381855E-04           7094
+  2.1541406801069E-04           9471
+  2.1541409174514E-04          11739
+  2.1541410533572E-04           6717
+  2.1541417226515E-04           8175
+  2.1541438178147E-04            938
+  2.1541447014142E-04          13736
+  2.1541451056569E-04          13574
+  2.1541469064445E-04           8823
+  2.1541478764140E-04           5907
+  2.1541481128387E-04          14331
+  2.1541489098769E-04           1209
+  2.1541499969257E-04           9957
+  2.1541530835739E-04           2505
+  2.1541537185650E-04           1857
+  2.1541551179296E-04          12711
+  2.1541561012341E-04           4340
+  2.1541610880966E-04           7256
+  2.1541625816247E-04           9362
+  2.1541628389287E-04          10010
+  2.1541655110616E-04            885
+  2.1541668335455E-04           1748
+  2.1541680375530E-04          13088
+  2.1541680595066E-04            237
+  2.1541680967423E-04           4287
+  2.1541744298523E-04          13035
+  2.1541775265070E-04           2396
+  2.1541778887827E-04           1910
+  2.1541785117533E-04          15842
+  2.1541820443864E-04           3854
+  2.1541836267189E-04          15680
+  2.1541861672360E-04          10281
+  2.1541869824601E-04          12926
+  2.1541878506410E-04           3315
+  2.1541893545292E-04           8337
+  2.1541896660413E-04           2181
+  2.1541897854739E-04           4935
+  2.1541906590757E-04           2343
+  2.1541909374594E-04           1047
+  2.1541923175065E-04           6231
+  2.1541975925895E-04           6555
+  2.1542001433576E-04          12116
+  2.1542005060711E-04          11630
+  2.1542015502646E-04            290
+  2.1542022490943E-04           2019
+  2.1542071800711E-04           9524
+  2.1542085489130E-04           4988
+  2.1542100931360E-04           2991
+  2.1542104066539E-04           1100
+  2.1542107139028E-04           3368
+  2.1542110094145E-04           3530
+  2.1542116414023E-04           4664
+  2.1542131680742E-04           1262
+  2.1542144489062E-04           2072
+  2.1542144510738E-04           8985
+  2.1542149411592E-04           7041
+  2.1542154265607E-04           3692
+  2.1542164514538E-04          16004
+  2.1542166801457E-04            561
+  2.1542183905983E-04             75
+  2.1542184139438E-04           4773
+  2.1542194939985E-04          14708
+  2.1542218311314E-04          14222
+  2.1542236578205E-04           4826
+  2.1542255966630E-04          13845
+  2.1542274194460E-04          14007
+  2.1542292585115E-04           8013
+  2.1542310066795E-04          12549
+  2.1542333325805E-04           1371
+  2.1542336283801E-04          12764
+  2.1542341942352E-04          12278
+  2.1542358836286E-04          10820
+  2.1542359371415E-04           5150
+  2.1542367196278E-04           1586
+  2.1542373937507E-04           6770
+  2.1542407891726E-04          10496
+  2.1542417008014E-04           2558
+  2.1542460663116E-04            399
+  2.1542471091260E-04          11306
+  2.1542477219404E-04           3801
+  2.1542507504952E-04          14546
+  2.1542515068634E-04           7527
+  2.1542544253701E-04           6932
+  2.1542546926697E-04           5474
+  2.1542586803273E-04           5583
+  2.1542587730847E-04          15627
+  2.1542589500716E-04           2667
+  2.1542590300353E-04           8876
+  2.1542590587017E-04           4449
+  2.1542606051258E-04           4611
+  2.1542644790501E-04           2234
+  2.1542646199651E-04          11901
+  2.1542660435191E-04           9686
+  2.1542660499454E-04           7365
+  2.1542690665510E-04           1695
+  2.1542725007460E-04          14169
+  2.1542743593355E-04          15465
+  2.1542746958206E-04           6122
+  2.1542779129436E-04          11091
+  2.1542790407166E-04           5421
+  2.1542795245509E-04           4016
+  2.1542795698764E-04           9795
+  2.1542802222102E-04          11144
+  2.1542803066433E-04          10443
+  2.1542809533811E-04            452
+  2.1542833469945E-04           1424
+  2.1542843953080E-04          13521
+  2.1542912530707E-04           2882
+  2.1542923665558E-04          10605
+  2.1542960534313E-04          12225
+  2.1542979761999E-04           6284
+  2.1542990008682E-04          15303
+  2.1543005194899E-04          14384
+  2.1543068947403E-04          11253
+  2.1543104898013E-04           5312
+  2.1543109026224E-04          10334
+  2.1543119936644E-04           9038
+  2.1543146569094E-04          13359
+  2.1543153784469E-04          11954
+  2.1543156273230E-04           5960
+  2.1543172424504E-04           9200
+  2.1543203419053E-04          13412
+  2.1543213145591E-04           6608
+  2.1543242035900E-04           8714
+  2.1543254639675E-04           7689
+  2.1543270312463E-04          15789
+  2.1543272805996E-04          13898
+  2.1543357082344E-04            128
+  2.1543410308930E-04           8552
+  2.1543417954426E-04          14979
+  2.1543427789402E-04           2829
+  2.1543464517447E-04           3477
+  2.1543511537978E-04           9633
+  2.1543529176169E-04           1533
+  2.1543553858644E-04          11792
+  2.1543554717788E-04          11577
+  2.1543555149881E-04          12387
+  2.1543583438213E-04           3963
+  2.1543586077534E-04            614
+  2.1543608528393E-04           7203
+  2.1543724917198E-04          13250
+  2.1543779467023E-04           7742
+  2.1543798633392E-04          12873
+  2.1543860954597E-04           8228
+  2.1543890751203E-04           8066
+  2.1543913099442E-04           8390
+  2.1543942209741E-04          12063
+  2.1543947752902E-04          15141
+  2.1543977612110E-04           7851
+  2.1543988908695E-04          11415
+  2.1544044622577E-04          14060
+  2.1544109481349E-04           5745
+  2.1544133235488E-04           4178
+  2.1544190102550E-04           5097
+  2.1544247973585E-04          12602
+  2.1544305285714E-04           6446
+  2.1544362712905E-04          12440
+  2.1544415166192E-04          10658
+  2.1544542959099E-04           2720
+  2.1544700128204E-04          10172
+  2.1545068615659E-04           5259
+  2.1545224211623E-04           7904
+  3.4566652851202E-04          20453
+  3.4566828801854E-04          39912
+  3.4566873812165E-04          26178
+  3.4566880580839E-04          19218
+  3.4566912285071E-04          27104
+  3.4566921344208E-04          25263
+  3.4566951709461E-04          32542
+  3.4566958715010E-04          18237
+  3.4566960321151E-04          25496
+  3.4566982954747E-04          35034
+  3.4566989118389E-04          29806
+  3.4567000637827E-04          22513
+  3.4567053570329E-04          28627
+  3.4567101126978E-04          28909
+  3.4567105488296E-04          19320
+  3.4567110945540E-04          33736
+  3.4567116155059E-04          28950
+  3.4567119027324E-04          28136
+  3.4567126984594E-04          28568
+  3.4567137393071E-04          40261
+  3.4567148655226E-04          20558
+  3.4567172697456E-04          39028
+  3.4567175547632E-04          18588
+  3.4567175788235E-04          22341
+  3.4567176299144E-04          21570
+  3.4567177835698E-04          31771
+  3.4567179579640E-04          23681
+  3.4567192737784E-04          35707
+  3.4567195067918E-04          22339
+  3.4567198185753E-04          17106
+  3.4567210812594E-04          18402
+  3.4567212789348E-04          34883
+  3.4567214897270E-04          20309
+  3.4567219606237E-04          18866
+  3.4567242953462E-04          28846
+  3.4567262997269E-04          27653
+  3.4567283746365E-04          33516
+  3.4567288171847E-04          29344
+  3.4567290026632E-04          19781
+  3.4567293579563E-04          35498
+  3.4567302459793E-04          23961
+  3.4567314939927E-04          26851
+  3.4567315296453E-04          16824
+  3.4567319781394E-04          18790
+  3.4567322652456E-04          18481
+  3.4567327111994E-04          34285
+  3.4567327800594E-04          17387
+  3.4567329134438E-04          34107
+  3.4567333806145E-04          29865
+  3.4567336724308E-04          18615
+  3.4567344945313E-04          28630
+  3.4567346715254E-04          30638
+  3.4567347411922E-04          18801
+  3.4567348813934E-04          32667
+  3.4567356142426E-04          40449
+  3.4567359417294E-04          20859
+  3.4567364440315E-04          28668
+  3.4567370245604E-04          20699
+  3.4567370653754E-04          28357
+  3.4567375993212E-04          19346
+  3.4567378279091E-04          24918
+  3.4567384213088E-04          31828
+  3.4567389981557E-04          18060
+  3.4567390396790E-04          34259
+  3.4567390604844E-04          37530
+  3.4567391086581E-04          27469
+  3.4567391406077E-04          16620
+  3.4567392471686E-04          27596
+  3.4567398582546E-04          20021
+  3.4567405471746E-04          32763
+  3.4567410026418E-04          23158
+  3.4567413252611E-04          34815
+  3.4567418149187E-04          29338
+  3.4567419959467E-04          30298
+  3.4567425414918E-04          27474
+  3.4567426952314E-04          17313
+  3.4567428921254E-04          16275
+  3.4567435301303E-04          35979
+  3.4567437144565E-04          16310
+  3.4567439376318E-04          26424
+  3.4567443573630E-04          36233
+  3.4567449011895E-04          17142
+  3.4567453397231E-04          19013
+  3.4567453515327E-04          16818
+  3.4567456505274E-04          18589
+  3.4567465447478E-04          40759
+  3.4567473716280E-04          34849
+  3.4567477430966E-04          36293
+  3.4567477439325E-04          16527
+  3.4567478896013E-04          30171
+  3.4567488478878E-04          26382
+  3.4567489434616E-04          24738
+  3.4567489480705E-04          21968
+  3.4567492184626E-04          17606
+  3.4567492757548E-04          20058
+  3.4567495456247E-04          18483
+  3.4567498921250E-04          19316
+  3.4567499730464E-04          24772
+  3.4567505480794E-04          21785
+  3.4567505486475E-04          39397
+  3.4567506608156E-04          35059
+  3.4567507077827E-04          34567
+  3.4567510230634E-04          24170
+  3.4567514755710E-04          25509
+  3.4567519154255E-04          37070
+  3.4567522802064E-04          16398
+  3.4567525766819E-04          20734
+  3.4567529026736E-04          20825
+  3.4567530322272E-04          40010
+  3.4567530622702E-04          20265
+  3.4567531223027E-04          21601
+  3.4567531402684E-04          25400
+  3.4567540813465E-04          22477
+  3.4567543245150E-04          32324
+  3.4567543260529E-04          19284
+  3.4567543490949E-04          27754
+  3.4567543752191E-04          39703
+  3.4567550742548E-04          27995
+  3.4567552439243E-04          36823
+  3.4567553662592E-04          31809
+  3.4567554933996E-04          38191
+  3.4567555746591E-04          38048
+  3.4567555857215E-04          32042
+  3.4567557279887E-04          25651
+  3.4567559669786E-04          23216
+  3.4567560283330E-04          35238
+  3.4567564875440E-04          35870
+  3.4567570423398E-04          38272
+  3.4567575725903E-04          18096
+  3.4567576851249E-04          35810
+  3.4567578182554E-04          37212
+  3.4567579360543E-04          24946
+  3.4567580132679E-04          18760
+  3.4567580991410E-04          21539
+  3.4567582267745E-04          28114
+  3.4567582403950E-04          27895
+  3.4567586635416E-04          25042
+  3.4567586663162E-04          33122
+  3.4567588010001E-04          38755
+  3.4567588651511E-04          36439
+  3.4567589800231E-04          20614
+  3.4567591251824E-04          35553
+  3.4567593075025E-04          25158
+  3.4567593694716E-04          35487
+  3.4567599116549E-04          32573
+  3.4567600781036E-04          32288
+  3.4567601533771E-04          23437
+  3.4567604378344E-04          36077
+  3.4567604684859E-04          36263
+  3.4567605928368E-04          16624
+  3.4567607037758E-04          24385
+  3.4567610386439E-04          20372
+  3.4567611212970E-04          21251
+  3.4567613898011E-04          22175
+  3.4567615045159E-04          20065
+  3.4567618517768E-04          18984
+  3.4567620150012E-04          35089
+  3.4567620421656E-04          25219
+  3.4567621709870E-04          28118
+  3.4567622257439E-04          28983
+  3.4567625389701E-04          29587
+  3.4567626432835E-04          22450
+  3.4567626550704E-04          17390
+  3.4567627953159E-04          20619
+  3.4567628728070E-04          35491
+  3.4567631467734E-04          34390
+  3.4567635666984E-04          20094
+  3.4567636156281E-04          30793
+  3.4567642761775E-04          28135
+  3.4567643627790E-04          35072
+  3.4567644358559E-04          34719
+  3.4567646036538E-04          23154
+  3.4567647455773E-04          39272
+  3.4567648326153E-04          17109
+  3.4567648560892E-04          26643
+  3.4567649192175E-04          27165
+  3.4567649310118E-04          31835
+  3.4567650031969E-04          27476
+  3.4567653067273E-04          26361
+  3.4567653630610E-04          30048
+  3.4567656247708E-04          37982
+  3.4567656609492E-04          17075
+  3.4567659487096E-04          37431
+  3.4567662704952E-04          36692
+  3.4567665772646E-04          31616
+  3.4567671777334E-04          21847
+  3.4567679124900E-04          34041
+  3.4567679744950E-04          39278
+  3.4567680483634E-04          23649
+  3.4567684475433E-04          19221
+  3.4567689448112E-04          29166
+  3.4567690110035E-04          23504
+  3.4567691078549E-04          18028
+  3.4567691322685E-04          23404
+  3.4567692977940E-04          39426
+  3.4567693894413E-04          36056
+  3.4567695599376E-04          34363
+  3.4567697801675E-04          24916
+  3.4567698465917E-04          31408
+  3.4567698547556E-04          30080
+  3.4567703220092E-04          16304
+  3.4567703598611E-04          31619
+  3.4567708528299E-04          39641
+  3.4567708710741E-04          38513
+  3.4567713061073E-04          29061
+  3.4567713400304E-04          20239
+  3.4567717784538E-04          22524
+  3.4567718603377E-04          36302
+  3.4567719140511E-04          40383
+  3.4567719773289E-04          34601
+  3.4567721930982E-04          30842
+  3.4567723997159E-04          32299
+  3.4567724051599E-04          38439
+  3.4567725001011E-04          16580
+  3.4567725781506E-04          39065
+  3.4567726345935E-04          22799
+  3.4567726871674E-04          27722
+  3.4567727868236E-04          24943
+  3.4567728799956E-04          30151
+  3.4567729201008E-04          19987
+  3.4567729223213E-04          22301
+  3.4567730069216E-04          30608
+  3.4567733735626E-04          19571
+  3.4567733846221E-04          36757
+  3.4567736766723E-04          24243
+  3.4567739344348E-04          28603
+  3.4567739735072E-04          40473
+  3.4567740910597E-04          30400
+  3.4567740954863E-04          34817
+  3.4567741120238E-04          34778
+  3.4567742487521E-04          19524
+  3.4567743060332E-04          39519
+  3.4567744958684E-04          38693
+  3.4567746415597E-04          19779
+  3.4567746665235E-04          31649
+  3.4567749737188E-04          29563
+  3.4567750413317E-04          19566
+  3.4567750783044E-04          23528
+  3.4567751251005E-04          25017
+  3.4567763155395E-04          39994
+  3.4567763596216E-04          27966
+  3.4567763797797E-04          37944
+  3.4567764043776E-04          26149
+  3.4567764216512E-04          21231
+  3.4567764804803E-04          18651
+  3.4567766493074E-04          27339
+  3.4567767177783E-04          31824
+  3.4567768094314E-04          20029
+  3.4567769997537E-04          23284
+  3.4567771513732E-04          40693
+  3.4567771857931E-04          39453
+  3.4567772282365E-04          28323
+  3.4567772526664E-04          36265
+  3.4567772839704E-04          22768
+  3.4567774396028E-04          37344
+  3.4567774816193E-04          19250
+  3.4567775640616E-04          28173
+  3.4567777166127E-04          33091
+  3.4567777238027E-04          24309
+  3.4567780891568E-04          26364
+  3.4567781032148E-04          22923
+  3.4567783427793E-04          30397
+  3.4567787849815E-04          38535
+  3.4567788167804E-04          37035
+  3.4567789224861E-04          27232
+  3.4567790198993E-04          37977
+  3.4567792773384E-04          31382
+  3.4567794771229E-04          26450
+  3.4567797368643E-04          31592
+  3.4567800501133E-04          34571
+  3.4567801922300E-04          32511
+  3.4567803004725E-04          19288
+  3.4567804801493E-04          31317
+  3.4567805532000E-04          20697
+  3.4567805822750E-04          32860
+  3.4567807003902E-04          30141
+  3.4567807392481E-04          37097
+  3.4567807477632E-04          32323
+  3.4567807945730E-04          25968
+  3.4567810262105E-04          25440
+  3.4567810733271E-04          32505
+  3.4567811645213E-04          37733
+  3.4567814095052E-04          20098
+  3.4567814332128E-04          19357
+  3.4567816330090E-04          16791
+  3.4567816369066E-04          31553
+  3.4567816758584E-04          28089
+  3.4567816796111E-04          22096
+  3.4567817797348E-04          35002
+  3.4567819139843E-04          38662
+  3.4567819171396E-04          23652
+  3.4567820427867E-04          31808
+  3.4567822801009E-04          18978
+  3.4567824789709E-04          36685
+  3.4567830381664E-04          38199
+  3.4567831078885E-04          19469
+  3.4567831245977E-04          17358
+  3.4567836951578E-04          23320
+  3.4567837541213E-04          39178
+  3.4567838407563E-04          37065
+  3.4567838495874E-04          39492
+  3.4567839472654E-04          34014
+  3.4567839502387E-04          26462
+  3.4567840243488E-04          20824
+  3.4567841892904E-04          25625
+  3.4567844725339E-04          37031
+  3.4567845420648E-04          26422
+  3.4567850362412E-04          26388
+  3.4567854280115E-04          39737
+  3.4567856072774E-04          29348
+  3.4567857768372E-04          24879
+  3.4567859619892E-04          32915
+  3.4567861575451E-04          34043
+  3.4567865789872E-04          17146
+  3.4567866510341E-04          33068
+  3.4567866991765E-04          18026
+  3.4567870829586E-04          40692
+  3.4567871542225E-04          37698
+  3.4567875631370E-04          32021
+  3.4567876045197E-04          27094
+  3.4567876859954E-04          35520
+  3.4567877252528E-04          26204
+  3.4567877962866E-04          31128
+  3.4567878137526E-04          40020
+  3.4567878639533E-04          33551
+  3.4567879769662E-04          38576
+  3.4567879807179E-04          33304
+  3.4567880526598E-04          25675
+  3.4567881955667E-04          27127
+  3.4567882272147E-04          30108
+  3.4567882600772E-04          33378
+  3.4567882929853E-04          23167
+  3.4567884066441E-04          16648
+  3.4567885901405E-04          19355
+  3.4567885961596E-04          34353
+  3.4567886007565E-04          19598
+  3.4567886131147E-04          29829
+  3.4567886559293E-04          17743
+  3.4567888201098E-04          17360
+  3.4567888321545E-04          19751
+  3.4567889783839E-04          18547
+  3.4567890028371E-04          38287
+  3.4567893946427E-04          23014
+  3.4567894541611E-04          34476
+  3.4567895031585E-04          36605
+  3.4567896337120E-04          32510
+  3.4567896864313E-04          32785
+  3.4567897034068E-04          19771
+  3.4567897685611E-04          17292
+  3.4567898326374E-04          17527
+  3.4567898838373E-04          32810
+  3.4567899138112E-04          24211
+  3.4567899792093E-04          21007
+  3.4567899895907E-04          39036
+  3.4567900309791E-04          38573
+  3.4567901398197E-04          37676
+  3.4567902576951E-04          32081
+  3.4567903318532E-04          19259
+  3.4567904823866E-04          26211
+  3.4567905045514E-04          26740
+  3.4567905835598E-04          33279
+  3.4567906617856E-04          25959
+  3.4567906998533E-04          37456
+  3.4567907375640E-04          40502
+  3.4567907564588E-04          27221
+  3.4567908072052E-04          17310
+  3.4567908237723E-04          22665
+  3.4567908367524E-04          22336
+  3.4567909219951E-04          19841
+  3.4567910314154E-04          33036
+  3.4567910418572E-04          16862
+  3.4567913797256E-04          17293
+  3.4567913950108E-04          25714
+  3.4567916765587E-04          35098
+  3.4567916854175E-04          34474
+  3.4567918337591E-04          28917
+  3.4567918572111E-04          29444
+  3.4567918654721E-04          24733
+  3.4567919000800E-04          17064
+  3.4567920854144E-04          28142
+  3.4567923246728E-04          26241
+  3.4567923650254E-04          35095
+  3.4567924231498E-04          38929
+  3.4567924299644E-04          22430
+  3.4567925847220E-04          27443
+  3.4567926956378E-04          21049
+  3.4567928662956E-04          25122
+  3.4567929796468E-04          23164
+  3.4567930273408E-04          36451
+  3.4567930684163E-04          35317
+  3.4567931427493E-04          16437
+  3.4567933160685E-04          25186
+  3.4567933475649E-04          36935
+  3.4567934261645E-04          20708
+  3.4567934345926E-04          38201
+  3.4567934643778E-04          27999
+  3.4567935120413E-04          34603
+  3.4567936186085E-04          39777
+  3.4567936500165E-04          28813
+  3.4567936856599E-04          18363
+  3.4567938049417E-04          22976
+  3.4567941016301E-04          16300
+  3.4567941079318E-04          40023
+  3.4567941137251E-04          28461
+  3.4567941269437E-04          34999
+  3.4567941610789E-04          36689
+  3.4567941623323E-04          22054
+  3.4567941702699E-04          21808
+  3.4567942005991E-04          18981
+  3.4567942414791E-04          20214
+  3.4567942854755E-04          36501
+  3.4567943759144E-04          23719
+  3.4567945022212E-04          20865
+  3.4567945302559E-04          22558
+  3.4567947694407E-04          39450
+  3.4567947942660E-04          23784
+
+
+         NODAL TIME STEP (estimation)
+         ---------------
+
+      TIME STEP       NODE NUMBER
+  2.0681092042470E-04          12373
+  2.0681402055665E-04          39576
+  2.0681461241059E-04          33651
+  2.0681557061108E-04          34046
+  2.0681640567943E-04          26936
+  2.0681709243322E-04          11531
+  2.0681746546095E-04          10793
+  2.0681776500320E-04           3288
+  2.0681781411103E-04          10346
+  2.0681789522440E-04          39181
+  2.0681796489233E-04          30886
+  2.0681803388255E-04           9608
+  2.0681803857263E-04          10741
+  2.0681813505327E-04          22591
+  2.0681825699504E-04          11926
+  2.0681839494876E-04          15086
+  2.0681847898390E-04          11136
+  2.0681863494110E-04          26541
+  2.0681864258389E-04           5606
+  2.0681864824709E-04          12768
+  2.0681873348351E-04           4473
+  2.0681905921792E-04          32071
+  2.0681912058271E-04          36468
+  2.0681916725577E-04          33256
+  2.0681919582379E-04          31281
+  2.0681926225713E-04           2051
+  2.0681935161707E-04           7581
+  2.0681946655726E-04          22196
+  2.0681959833043E-04           5211
+  2.0681981702025E-04          11978
+  2.0682000676392E-04          25408
+  2.0682004390407E-04          32466
+  2.0682005650442E-04          17903
+  2.0682006522713E-04          13558
+  2.0682020067800E-04          14691
+  2.0682031895690E-04           7186
+  2.0682035652735E-04          14743
+  2.0682046006973E-04          31333
+  2.0682058298252E-04          18298
+  2.0682062272995E-04          10003
+  2.0682071460670E-04           6053
+  2.0682084051180E-04          15138
+  2.0682095503313E-04          20273
+  2.0682103997283E-04          37653
+  2.0682105100233E-04          15481
+  2.0682136384553E-04          20221
+  2.0682136666849E-04          12321
+  2.0682145763961E-04          24961
+  2.0682148952952E-04          25013
+  2.0682154391917E-04          31728
+  2.0682162861157E-04          18641
+  2.0682179936120E-04          36811
+  2.0682187402382E-04          20616
+  2.0682187560449E-04          19878
+  2.0682220254255E-04           6791
+  2.0682222557443E-04          34441
+  2.0682231363645E-04          16718
+  2.0682235180804E-04          27331
+  2.0682239029371E-04           8028
+  2.0682248612346E-04          22986
+  2.0682253016327E-04           4868
+  2.0682258332814E-04          38048
+  2.0682266662901E-04          17508
+  2.0682266805334E-04           1656
+  2.0682267165424E-04          10398
+  2.0682286428614E-04          31676
+  2.0682287959442E-04           4078
+  2.0682302689565E-04          36073
+  2.0682310540743E-04           2893
+  2.0682320196723E-04           3236
+  2.0682323909970E-04          16666
+  2.0682325516315E-04          37258
+  2.0682329288926E-04          28121
+  2.0682330372822E-04           9951
+  2.0682334930895E-04          19036
+  2.0682340081414E-04          32861
+  2.0682345217062E-04           9213
+  2.0682349334078E-04           3683
+  2.0682353441271E-04           2841
+  2.0682362529631E-04          21801
+  2.0682366887313E-04          11188
+  2.0682367389177E-04          23038
+  2.0682367809594E-04          16323
+  2.0682370138648E-04          13953
+  2.0682372552410E-04          36863
+  2.0682374557818E-04          30938
+  2.0682376295190E-04           7633
+  2.0682382457885E-04          27726
+  2.0682384021118E-04           8423
+  2.0682407669757E-04          17113
+  2.0682409652500E-04          19826
+  2.0682412287309E-04           6001
+  2.0682422635579E-04          37206
+  2.0682428035856E-04          15876
+  2.0682438089353E-04           2103
+  2.0682452898081E-04           1708
+  2.0682454393772E-04          20668
+  2.0682455512382E-04          25803
+  2.0682456560114E-04          39628
+  2.0682464453362E-04          26593
+  2.0682465029693E-04           6396
+  2.0682468136480E-04          13163
+  2.0682482637776E-04          25356
+  2.0682485294231E-04          13901
+  2.0682496336857E-04           4816
+  2.0682499029979E-04           5658
+  2.0682511305951E-04            471
+  2.0682522683852E-04          30491
+  2.0682535070076E-04           2446
+  2.0682540419136E-04           9161
+  2.0682541756251E-04           8818
+  2.0682545078842E-04          16271
+  2.0682560857720E-04           6448
+  2.0682563491444E-04          32123
+  2.0682569955873E-04          26198
+  2.0682590259708E-04          14296
+  2.0682597365894E-04          33308
+  2.0682599825838E-04          24618
+  2.0682600312801E-04          21063
+  2.0682603649757E-04          21011
+  2.0682607628981E-04          39233
+  2.0682614307152E-04             76
+  2.0682628229122E-04          26988
+  2.0682642836796E-04          38786
+  2.0682648605871E-04          36416
+  2.0682652511476E-04           7238
+  2.0682659079122E-04           5263
+  2.0682661873753E-04          23433
+  2.0682672274511E-04           9556
+  2.0682674981800E-04          24566
+  2.0682688714368E-04          37996
+  2.0682693263433E-04          21406
+  2.0682724360354E-04          13506
+  2.0682729415876E-04          14348
+  2.0682729757252E-04            866
+  2.0682732973545E-04          28516
+  2.0682736180011E-04          38391
+  2.0682739459599E-04          18693
+  2.0682749537718E-04          38443
+  2.0682754577425E-04          33703
+  2.0682778747184E-04          17061
+  2.0682795829681E-04          27383
+  2.0682801943797E-04          19431
+  2.0682802889528E-04          26146
+  2.0682805930602E-04          30096
+  2.0682825420060E-04          35283
+  2.0682836408145E-04           7976
+  2.0682836722177E-04          22643
+  2.0682837794320E-04          28963
+  2.0682840711807E-04          34888
+  2.0682841164914E-04          18246
+  2.0682844109989E-04          12716
+  2.0682857436831E-04           8766
+  2.0682860548713E-04           2498
+  2.0682865039219E-04          35626
+  2.0682867304335E-04           3631
+  2.0682885608025E-04          21458
+  2.0682909758872E-04          36021
+  2.0682928658716E-04            128
+  2.0682929277192E-04          15533
+  2.0682933029966E-04          23381
+  2.0682943229805E-04          37601
+  2.0682945481393E-04            523
+  2.0682948152152E-04          21853
+  2.0682951592527E-04          38838
+  2.0682963941369E-04          24223
+  2.0682967621421E-04           6843
+  2.0682974606773E-04          22248
+  2.0682981749210E-04          35678
+  2.0682995399916E-04          19483
+  2.0683003980423E-04           4421
+  2.0683007690821E-04          29358
+  2.0683015630848E-04           1261
+  2.0683027075996E-04          15928
+  2.0683027710351E-04          28568
+  2.0683028605518E-04           1313
+  2.0683041339323E-04          11583
+  2.0683042743262E-04          25751
+  2.0683050519399E-04          29701
+  2.0683089890924E-04           4026
+  2.0683123196853E-04            918
+  2.0683127751286E-04          27778
+  2.0683130640681E-04          34836
+  2.0683143993716E-04          17851
+  2.0683152858457E-04          17456
+  2.0683164438555E-04          23828
+  2.0683174505490E-04          30543
+  2.0683179960968E-04          29753
+  2.0683190685712E-04          35231
+  2.0683242132105E-04          13111
+  2.0683244011471E-04          32913
+  2.0683271610798E-04          24171
+  2.0683303682606E-04          28911
+  2.0683306556979E-04          28173
+  2.0683321639815E-04          32518
+  2.0683327689624E-04          19088
+  2.0683338460508E-04          30148
+  2.0683391706439E-04           8371
+  2.0683443010280E-04          34493
+  2.0683456616932E-04          23776
+  2.0683483809839E-04          29306
+  2.0683486208033E-04          34098
+  2.4036805604343E-04          10002
+  2.4036990874219E-04          25012
+  2.4037005656777E-04          12717
+  2.4037054498461E-04          12372
+  2.4037135925172E-04          13902
+  2.4037148448386E-04          28122
+  2.4037181747850E-04          19037
+  2.4037182136641E-04          20272
+  2.4037236481911E-04          11532
+  2.4037244542239E-04          33652
+  2.4037245179249E-04           9607
+  2.4037329952145E-04          12767
+  2.4037339617931E-04          39577
+  2.4037378094993E-04          19877
+  2.4037401369247E-04          10397
+  2.4037421282698E-04          36812
+  2.4037478569007E-04          12322
+  2.4037511749504E-04          20667
+  2.4037528788052E-04          33257
+  2.4037528819207E-04          18642
+  2.4037580469555E-04           5607
+  2.4037588937688E-04          30937
+  2.4037590774444E-04           5212
+  2.4037595539030E-04          15137
+  2.4037599387915E-04          14742
+  2.4037615607500E-04          27727
+  2.4037629949540E-04          32862
+  2.4037636975261E-04          25407
+  2.4037660227790E-04           3287
+  2.4037660346600E-04          13162
+  2.4037662102501E-04          10347
+  2.4037662283115E-04          32467
+  2.4037670015524E-04          11927
+  2.4037684892173E-04          37207
+  2.4037729969618E-04          34047
+  2.4037754134246E-04          10742
+  2.4037759157353E-04          30492
+  2.4037762444726E-04          14297
+  2.4037769296922E-04          31332
+  2.4037774138118E-04           7582
+  2.4037790472333E-04           6447
+  2.4037798531481E-04          10792
+  2.4037833116873E-04          11977
+  2.4037834985882E-04           9952
+  2.4037840729745E-04          19482
+  2.4037841495864E-04          30887
+  2.4037858859896E-04          11137
+  2.4037871590473E-04          30542
+  2.4037877825764E-04           7187
+  2.4037886947607E-04          25802
+  2.4037888816141E-04          31282
+  2.4037891907774E-04          21062
+  2.4037896285726E-04          13557
+  2.4037941920840E-04           4027
+  2.4037953652144E-04          13112
+  2.4037967137840E-04          13507
+  2.4037970028680E-04          26197
+  2.4037985996367E-04           2892
+  2.4037996442455E-04          26937
+  2.4038026824902E-04           9557
+  2.4038048593611E-04          39182
+  2.4038097148103E-04          30097
+  2.4038125348416E-04            472
+  2.4038135062830E-04           6792
+  2.4038136645961E-04          33702
+  2.4038145519159E-04          31677
+  2.4038145989142E-04           6052
+  2.4038148211538E-04          28962
+  2.4038149983988E-04          32072
+  2.4038177087542E-04           3632
+  2.4038186799652E-04           4472
+  2.4038188181747E-04          31727
+  2.4038188720259E-04            867
+  2.4038203717856E-04           6842
+  2.4038218923888E-04          36467
+  2.4038222876209E-04          34442
+  2.4038225071075E-04          37602
+  2.4038226738015E-04          19087
+  2.4038227698753E-04          38392
+  2.4038228823806E-04           5262
+  2.4038229156134E-04           4867
+  2.4038236548285E-04          15532
+  2.4038239200620E-04          34887
+  2.4038242704252E-04          22197
+  2.4038248083746E-04           3682
+  2.4038252320135E-04          16322
+  2.4038254904588E-04           8422
+  2.4038256506192E-04          27332
+  2.4038258661088E-04           4077
+  2.4038263626047E-04           6002
+  2.4038265684067E-04          20222
+  2.4038275525452E-04          34097
+  2.4038276186171E-04          19432
+  2.4038289316312E-04          24617
+  2.4038302480849E-04          32122
+  2.4038310338125E-04          15877
+  2.4038317511465E-04          20617
+  2.4038319502361E-04             77
+  2.4038340378318E-04          21802
+  2.4038357684570E-04           2842
+  2.4038362651922E-04          25357
+  2.4038367272766E-04           2052
+  2.4038369962997E-04          25752
+  2.4038371058567E-04          39627
+  2.4038377543275E-04           8817
+  2.4038383463766E-04           6397
+  2.4038395628736E-04          16272
+  2.4038399722138E-04          28517
+  2.4038400898348E-04          34492
+  2.4038401924205E-04          38787
+  2.4038406587622E-04          37997
+  2.4038410142091E-04          15927
+  2.4038416216126E-04           9212
+  2.4038429775051E-04          27382
+  2.4038433952820E-04           1312
+  2.4038437625331E-04           3237
+  2.4038439233937E-04          38047
+  2.4038445850128E-04          36072
+  2.4038465976747E-04          15482
+  2.4038466762788E-04          33307
+  2.4038470467353E-04          17902
+  2.4038509478626E-04          16717
+  2.4038516160893E-04          36417
+  2.4038520156838E-04          18297
+  2.4038524326254E-04          24962
+  2.4038539925198E-04           5657
+  2.4038543842617E-04          23037
+  2.4038561478139E-04          26542
+  2.4038563229940E-04          39232
+  2.4038570112149E-04          26987
+  2.4038570645075E-04          32517
+  2.4038574435124E-04           1657
+  2.4038597577562E-04          29357
+  2.4038601386910E-04           2447
+  2.4038615577349E-04           4817
+  2.4038617851763E-04          36862
+  2.4038634023456E-04          18692
+  2.4038635638481E-04            522
+  2.4038644375621E-04           1707
+  2.4038652239618E-04          21457
+  2.4038655260913E-04          15087
+  2.4038661936708E-04           1262
+  2.4038666497511E-04            917
+  2.4038667358825E-04          22987
+  2.4038676508543E-04          23382
+  2.4038677059043E-04           2497
+  2.4038677546808E-04           8027
+  2.4038677901928E-04          19827
+  2.4038678194861E-04          35282
+  2.4038687501794E-04          30147
+  2.4038703512581E-04          18247
+  2.4038703948445E-04          26592
+  2.4038705508238E-04          22592
+  2.4038713157199E-04           7977
+  2.4038724049538E-04          38442
+  2.4038724214885E-04          17507
+  2.4038735715909E-04          17457
+  2.4038747058757E-04          29702
+  2.4038756233080E-04          28567
+  2.4038763337803E-04            127
+  2.4038763841455E-04          22247
+  2.4038774204755E-04          14692
+  2.4038776819948E-04          17112
+  2.4038780148733E-04          14347
+  2.4038826882156E-04           9162
+  2.4038826973011E-04          23432
+  2.4038832921025E-04          16667
+  2.4038839731977E-04          13952
+  2.4038848698401E-04          26147
+  2.4038854248498E-04          11187
+  2.4038854541469E-04          21852
+  2.4038859134822E-04          17852
+  2.4038872786723E-04           4422
+  2.4038882123029E-04          32912
+  2.4038884641378E-04          22642
+  2.4038896278352E-04          38837
+  2.4038900007817E-04          37652
+  2.4038913747625E-04          17062
+  2.4038923834971E-04           8767
+  2.4038967282786E-04          34837
+  2.4038971692118E-04          24567
+  2.4038977263318E-04          35677
+  2.4039013483021E-04           7237
+  2.4039016687925E-04           2102
+  2.4039033772300E-04          27777
+  2.4039049470823E-04           8372
+  2.4039101535248E-04          37257
+  2.4039138053106E-04          21407
+  2.4039152960978E-04          11582
+  2.4039153156106E-04          21012
+  2.4039186092827E-04          29307
+  2.4039188960885E-04          29752
+  2.4039218005871E-04          23777
+  2.4039226045870E-04           7632
+  2.4039323281530E-04          28912
+  2.4039332346167E-04          28172
+  2.4039372645107E-04          24172
+  2.4039428262965E-04          23827
+  2.4039492701894E-04          24222
+  2.4039598524246E-04          35232
+  2.4039608212609E-04          36022
+  2.4039614061737E-04          35627
+  2.6257041355252E-04          37654
+  2.6257055567582E-04          16665
+  2.6257265162353E-04          15085
+  2.6257288747298E-04          17060
+  2.6257310184871E-04          24224
+  2.6257318798703E-04          22195
+  2.6257418338462E-04          13954
+  2.6257423292166E-04          37259
+  2.6257442868068E-04          27779
+  2.6257476382318E-04          18299
+  2.6257484102993E-04          17904
+  2.6257520476226E-04          14690
+  2.6257545217741E-04          35230
+  2.6257574388694E-04          35625
+  2.6257574909363E-04          10794
+  2.6257581102598E-04          32070
+  2.6257584821737E-04           1709
+  2.6257587635079E-04          15480
+  2.6257594206127E-04          28174
+  2.6257609806741E-04          23829
+  2.6257616868361E-04          38049
+  2.6257626592537E-04          36469
+  2.6257627158395E-04          22590
+  2.6257639406222E-04           2104
+  2.6257642207824E-04          33309
+  2.6257651297949E-04           9160
+  2.6257661204179E-04          21010
+  2.6257677209241E-04           2840
+  2.6257711082146E-04           4474
+  2.6257716710347E-04          24565
+  2.6257722276594E-04          17509
+  2.6257726454975E-04          11189
+  2.6257734212082E-04          36864
+  2.6257737418316E-04          24960
+  2.6257753071899E-04          19825
+  2.6257766582578E-04           8765
+  2.6257780715710E-04          33650
+  2.6257783266817E-04          15875
+  2.6257786622646E-04           7634
+  2.6257790229695E-04           4079
+  2.6257833997947E-04          39180
+  2.6257834101064E-04          26594
+  2.6257836948360E-04          16270
+  2.6257838861089E-04          14349
+  2.6257839738983E-04          36020
+  2.6257849395444E-04            470
+  2.6257867433290E-04           1655
+  2.6257880726331E-04          25355
+  2.6257887319377E-04           8029
+  2.6257889677935E-04            919
+  2.6257896439132E-04          31729
+  2.6257899111603E-04          32465
+  2.6257905577832E-04          26540
+  2.6257912442924E-04          20615
+  2.6257917623722E-04           3235
+  2.6257924433079E-04           2499
+  2.6257929864404E-04          10345
+  2.6257934658806E-04             75
+  2.6257936163586E-04          36074
+  2.6257942234307E-04          38785
+  2.6257951119038E-04          28910
+  2.6257956018343E-04          26989
+  2.6257982384090E-04          37600
+  2.6257983431775E-04           4869
+  2.6257988404921E-04           5659
+  2.6258005783646E-04          30885
+  2.6258006608053E-04          21800
+  2.6258016946258E-04          33255
+  2.6258019655128E-04          22985
+  2.6258022177162E-04          10740
+  2.6258030601572E-04          13559
+  2.6258048484106E-04          33704
+  2.6258054422253E-04          37995
+  2.6258062258678E-04          26145
+  2.6258062572819E-04          29754
+  2.6258069117598E-04          21854
+  2.6258082718713E-04          29359
+  2.6258083145682E-04           4420
+  2.6258086352326E-04          11925
+  2.6258091779730E-04          36415
+  2.6258100216034E-04          17114
+  2.6258101330930E-04          22249
+  2.6258103750731E-04          34045
+  2.6258105181271E-04           1314
+  2.6258105585662E-04          20220
+  2.6258107658047E-04           5605
+  2.6258108595134E-04          39575
+  2.6258120104760E-04            524
+  2.6258120844937E-04          11584
+  2.6258121118270E-04           2445
+  2.6258126080970E-04          39629
+  2.6258129864587E-04           3684
+  2.6258134814556E-04           4815
+  2.6258147934091E-04           2894
+  2.6258148065452E-04          31334
+  2.6258153595726E-04           2050
+  2.6258158074574E-04          28515
+  2.6258159555645E-04          38444
+  2.6258169293267E-04          11530
+  2.6258179063457E-04          38839
+  2.6258181344778E-04          32914
+  2.6258181841576E-04          21405
+  2.6258197245737E-04           8424
+  2.6258197965715E-04          26935
+  2.6258204839837E-04          39234
+  2.6258212175035E-04          24170
+  2.6258212684369E-04           6000
+  2.6258215682202E-04          23434
+  2.6258223477425E-04           5264
+  2.6258239341799E-04           7239
+  2.6258251916971E-04          22644
+  2.6258252407624E-04          16719
+  2.6258252467670E-04          31280
+  2.6258255656704E-04          38390
+  2.6258264284841E-04          23380
+  2.6258264733702E-04          11135
+  2.6258271097665E-04            865
+  2.6258272221361E-04          24619
+  2.6258273534487E-04           7580
+  2.6258291174743E-04          11979
+  2.6258291481229E-04          16324
+  2.6258292105076E-04          25750
+  2.6258295218955E-04          27384
+  2.6258322470725E-04          23039
+  2.6258322758748E-04           5210
+  2.6258323443440E-04           1260
+  2.6258347801932E-04           6395
+  2.6258349298745E-04          27330
+  2.6258353990516E-04          18694
+  2.6258366059519E-04          35679
+  2.6258393732421E-04           3630
+  2.6258401794370E-04          21459
+  2.6258403921700E-04          12374
+  2.6258414376895E-04          18245
+  2.6258420228860E-04           8370
+  2.6258421786194E-04          12769
+  2.6258425216932E-04           6054
+  2.6258438096437E-04          12320
+  2.6258438723485E-04           7975
+  2.6258441347329E-04          31675
+  2.6258444502461E-04          17455
+  2.6258450116692E-04          34835
+  2.6258450731372E-04          13164
+  2.6258451219727E-04          19430
+  2.6258455485596E-04           3289
+  2.6258459890121E-04           8819
+  2.6258461640973E-04           7185
+  2.6258471490030E-04          32124
+  2.6258472146938E-04           4025
+  2.6258506473756E-04          25409
+  2.6258542481873E-04          34889
+  2.6258564087654E-04          34440
+  2.6258566676693E-04          35284
+  2.6258575392035E-04           6790
+  2.6258577411480E-04          37205
+  2.6258589503041E-04          34494
+  2.6258627917762E-04            129
+  2.6258636172055E-04          14295
+  2.6258639467734E-04          18640
+  2.6258640206683E-04          32519
+  2.6258669204879E-04           9950
+  2.6258672387525E-04           9609
+  2.6258676509105E-04           9214
+  2.6258681929359E-04           9555
+  2.6258686003326E-04          28964
+  2.6258690339125E-04          32860
+  2.6258701663391E-04          30149
+  2.6258706652624E-04          17850
+  2.6258715378435E-04          27725
+  2.6258727825243E-04          14744
+  2.6258746236797E-04          23775
+  2.6258763813583E-04          15139
+  2.6258766558106E-04          36810
+  2.6258800902055E-04          28569
+  2.6258824983286E-04          10399
+  2.6258834897626E-04          28120
+  2.6258837754905E-04          25014
+  2.6258852696397E-04          34099
+  2.6258863292631E-04          21064
+  2.6258868881000E-04          26199
+  2.6258869063759E-04          30490
+  2.6258871640031E-04          29305
+  2.6258893911637E-04          15929
+  2.6258900317178E-04          25804
+  2.6258917374828E-04          13505
+  2.6258919073109E-04          29700
+  2.6258929711270E-04          30939
+  2.6258943848096E-04          30095
+  2.6258953961667E-04          13900
+  2.6258956380308E-04           6844
+  2.6258965389303E-04          15534
+  2.6259139514849E-04          19035
+  2.6259184083542E-04          20669
+  2.6259214820494E-04          19879
+  2.6259218333822E-04          12715
+  2.6259282339260E-04           6449
+  2.6259296814099E-04          10004
+  2.6259300630687E-04          19484
+  2.6259353201043E-04          13110
+  2.6259369588405E-04          20274
+  2.6259380861885E-04          30544
+  2.6259401484233E-04          19089
+  3.2631364047216E-04          39795
+  3.2631463620607E-04           5457
+  3.2631511828886E-04            261
+  3.2631556615518E-04           1937
+  3.2631671201642E-04           3783
+  3.2631672709091E-04          22351
+  3.2631699471921E-04            634
+  3.2631707787650E-04           7340
+  3.2631715332762E-04            268
+  3.2631716004743E-04           9075
+  3.2631718631708E-04          16827
+  3.2631720772051E-04            257
+  3.2631730949876E-04           1874
+  3.2631745057584E-04          16490
+  3.2631748900635E-04            325
+  3.2631750233634E-04          20897
+  3.2631753800324E-04           4995
+  3.2631759446855E-04          23144
+  3.2631763356019E-04           1118
+  3.2631770854618E-04           6254
+  3.2631798969370E-04            352
+  3.2631799605147E-04          25548
+  3.2631806451506E-04          29853
+  3.2631812801072E-04          31987
+  3.2631813444139E-04           6615
+  3.2631816088713E-04          20371
+  3.2631817177318E-04          33011
+  3.2631817190243E-04          29551
+  3.2631817232857E-04          26697
+  3.2631820131089E-04          14542
+  3.2631820790703E-04           6945
+  3.2631823272237E-04          14581
+  3.2631830207221E-04          29218
+  3.2631833411218E-04          20532
+  3.2631837029883E-04          18127
+  3.2631839369382E-04          10158
+  3.2631840799168E-04          35418
+  3.2631842801727E-04           9868
+  3.2631846915245E-04          30404
+  3.2631856586626E-04          16432
+  3.2631858179842E-04          10553
+  3.2631860333579E-04          26334
+  3.2631871871894E-04          18408
+  3.2631874272870E-04          20471
+  3.2631875997631E-04          12541
+  3.2631877635086E-04          19280
+  3.2631882557623E-04          28788
+  3.2631882816395E-04          35882
+  3.2631884618593E-04            230
+  3.2631885629011E-04          30403
+  3.2631887150169E-04          19244
+  3.2631887754073E-04          33539
+  3.2631889190294E-04            267
+  3.2631890494258E-04          15246
+  3.2631898823541E-04          12078
+  3.2631902563893E-04          16119
+  3.2631902620121E-04           5062
+  3.2631905995092E-04          19616
+  3.2631909258799E-04          11022
+  3.2631910277653E-04          23590
+  3.2631911550329E-04          26698
+  3.2631912587444E-04          26360
+  3.2631913562826E-04          27091
+  3.2631917336261E-04          26333
+  3.2631922916992E-04          14118
+  3.2631926973494E-04          27092
+  3.2631928896045E-04           4210
+  3.2631931498558E-04           7829
+  3.2631931943166E-04          18134
+  3.2631932437951E-04          35441
+  3.2631935148518E-04          31592
+  3.2631936183773E-04           9346
+  3.2631937045192E-04           2202
+  3.2631937377570E-04          19977
+  3.2631940844875E-04           4240
+  3.2631941871466E-04          22804
+  3.2631942128776E-04           4973
+  3.2631944891081E-04          38267
+  3.2631945887268E-04           8680
+  3.2631947205313E-04          31098
+  3.2631949069270E-04          19622
+  3.2631949108565E-04          14933
+  3.2631949413278E-04          29613
+  3.2631950634941E-04            324
+  3.2631951961406E-04          15331
+  3.2631952353988E-04          21594
+  3.2631953282252E-04          20037
+  3.2631959355287E-04          20432
+  3.2631960201675E-04            348
+  3.2631962558557E-04          23985
+  3.2631963261210E-04          20502
+  3.2631963704100E-04           5852
+  3.2631963750607E-04          38241
+  3.2631968387055E-04          11807
+  3.2631970046262E-04           4610
+  3.2631974060914E-04          21677
+  3.2631975449215E-04           2241
+  3.2631975752565E-04            656
+  3.2631978434520E-04          14963
+  3.2631980740919E-04          35846
+  3.2631980803463E-04           8653
+  3.2631982908434E-04          16828
+  3.2631983306428E-04          14088
+  3.2631984574954E-04          32676
+  3.2631984916107E-04          38553
+  3.2631985258048E-04           7860
+  3.2631986243511E-04           7795
+  3.2631987955564E-04          30008
+  3.2631988940977E-04          32654
+  3.2631989656038E-04          26849
+  3.2631991620884E-04          36266
+  3.2631993118391E-04           5005
+  3.2631993351111E-04           4268
+  3.2631993452487E-04          19623
+  3.2631997755954E-04          17609
+  3.2631999235938E-04          14186
+  3.2632000237113E-04           5367
+  3.2632004090743E-04          12473
+  3.2632004332662E-04            719
+  3.2632004602087E-04          16513
+  3.2632005079896E-04          25117
+  3.2632006334261E-04            662
+  3.2632006741290E-04          30277
+  3.2632008155417E-04          17216
+  3.2632008708215E-04           1029
+  3.2632011700321E-04          21199
+  3.2632012146702E-04          28000
+  3.2632014794228E-04          34598
+  3.2632015446196E-04          11350
+  3.2632017015060E-04          18003
+  3.2632019044210E-04          37084
+  3.2632019127509E-04          30314
+  3.2632021352866E-04            234
+  3.2632021681664E-04          31437
+  3.2632021735802E-04          22900
+  3.2632024901826E-04          30672
+  3.2632026394394E-04          35442
+  3.2632028050689E-04          14962
+  3.2632029802491E-04          35487
+  3.2632030109574E-04           7102
+  3.2632030664841E-04          35837
+  3.2632030996916E-04          34238
+  3.2632031974999E-04           4279
+  3.2632032154550E-04          16055
+  3.2632032220867E-04          36697
+  3.2632032253753E-04          20428
+  3.2632033502950E-04           6616
+  3.2632037280351E-04          37479
+  3.2632037477120E-04          35815
+  3.2632041256934E-04           7834
+  3.2632041651161E-04          31493
+  3.2632041798444E-04           1078
+  3.2632043513961E-04          20403
+  3.2632044003323E-04          36998
+  3.2632044608661E-04          18522
+  3.2632045365457E-04          33072
+  3.2632045478170E-04          14580
+  3.2632045963198E-04           6706
+  3.2632046185560E-04          37388
+  3.2632046554747E-04          38242
+  3.2632046626055E-04          16549
+  3.2632046823924E-04          33563
+  3.2632047823078E-04           9748
+  3.2632048196084E-04          31048
+  3.2632048275178E-04          35814
+  3.2632051683615E-04          10225
+  3.2632053321837E-04          38281
+  3.2632053438068E-04          11412
+  3.2632053551512E-04          29193
+  3.2632055003841E-04          39794
+  3.2632057248263E-04          17729
+  3.2632058115984E-04          29946
+  3.2632058243418E-04           6647
+  3.2632059175712E-04          25547
+  3.2632059290588E-04           6247
+  3.2632059671025E-04          18953
+  3.2632061622297E-04          23239
+  3.2632062072364E-04           8224
+  3.2632062073736E-04          11345
+  3.2632062961131E-04          21713
+  3.2632063239079E-04          28396
+  3.2632063804956E-04          32655
+  3.2632064104353E-04          14510
+  3.2632064495843E-04           4310
+  3.2632065426880E-04          18013
+  3.2632066181573E-04          33900
+  3.2632067590097E-04          16582
+  3.2632068311554E-04           1542
+  3.2632068394153E-04           7855
+  3.2632068567540E-04          31436
+  3.2632069229293E-04          37814
+
+
+         NODAL TIME STEP DISTRIBUTION 
+         ----------------------------
+
+
+            % OF NODES
+                   ^
+                   |                                                            
+          78.482 --|                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+                   |                                                        #   
+           0.000 --|#  #   #  #  #   #  #  #  #   #  #  #  #   #  #  #   #  ##  
+                    -------------------------------------------------------------> NODAL TIME STEP
+                    |                                                          |
+                2.068E-04                                                  3.311E-04
+  
+  
+
+
+     INITIAL ADDED MASS ESTIMATION for /DT/NODA/CST
+     ----------------------------------------------
+
+
+            DM/M - at first cycle - scaling factor = 0.9
+                   ^
+                   |                                                            
+           0.100 --|                                                          * 
+                   |                                                            
+                   |                                                        *   
+                   |                                                      *     
+                   |                                                   *        
+                   |                                                 *          
+                   |                                                            
+                   |                                               *            
+                   |                                             *              
+                   |                                           *                
+                   |                                        *                   
+                   |                                      *                     
+                   |                                                            
+                   |                                   *                        
+                   |                                *                           
+                   |                             *                              
+                   |                          *                                 
+                   |                       *                                    
+                   |                                                            
+                   |                   *                                        
+                   |               *                                            
+                   |           *                                                
+           0.005 --|*    *                                                      
+                    -------------------------------------------------------------> TARGET TIME STEP
+                    |                                                          |
+                7.195E-04                                                  2.952E-03
+  
+  
+              DM/M at first cycle          |  Target time step - scaling factor = 0.9  |  Target time step - scaling factor = 0.67
+    -------------------------------------  |  ---------------------------------------  |  ---------------------------------------
+                 1.000E-02                 |                 9.741E-04                 |                 7.252E-04
+                 2.000E-02                 |                 1.346E-03                 |                 1.002E-03
+                 3.000E-02                 |                 1.635E-03                 |                 1.217E-03
+                 4.000E-02                 |                 1.881E-03                 |                 1.400E-03
+                 5.000E-02                 |                 2.097E-03                 |                 1.561E-03
+
+
+    WARNING : These added mass estimations are valid at first cycle only.
+    Because of element deformation or contacts the added mass can increase during the run
+
+
+ SUMMARY OF POSSIBLE INCOMPATIBLE KINEMATIC CONDITIONS :
+ -----------------------------------------------------
+                                  
+ NO TRUE INCOMPATIBLE KINEMATIC CONDITION
+
+ 
+    STARTER STORAGE 
+    --------------- 
+ 
+    STARTER MEMORY USAGE        257 MB
+
+
+     LOCAL ENGINE STORAGE EVALUATION FOR SPMD PROCESSOR     1
+     --------------------------------------------------------
+        RESTART FILE SIZE        61 MB
+
+
+     RESTART FILES M_RE20_0000 WRITTEN
+     -------------
+
+  
+------------------------------------------------------------------------
+  
+                   ** COMPUTE TIME INFORMATION **
+  
+ EXECUTION STARTED      :      2026/11/25  13:47:22
+ EXECUTION COMPLETED    :      2026/11/25  13:47:23
+  
+ ELAPSED TIME...........=          0.72 s
+                               00:00:00
+  
+------------------------------------------------------------------------
+
+
+
+     NORMAL TERMINATION                                                                  
+     ------------------                                                                  
+              0 ERROR(S)            
+              0 WARNING(S)          
+
+
