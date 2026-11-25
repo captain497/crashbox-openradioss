@@ -60,6 +60,22 @@ def clip_peak(ms):  # highest average over any window of `ms` milliseconds (like
     k = np.searchsorted(t_, t_ + ms)
     ok = k < len(t_)
     return float(np.max((cum[k[ok]] - cum[ok]) / (t_[k[ok]] - t_[ok])))
+def cfc(x, dt_s, cls=600):  # SAE J211 CFC filter (2nd-order Butterworth, forward + backward)
+    wd = 2 * np.pi * cls * 2.0775; wa = np.sin(wd * dt_s / 2) / np.cos(wd * dt_s / 2)
+    den = 1 + np.sqrt(2) * wa + wa ** 2
+    a0 = wa ** 2 / den; a1 = 2 * a0; a2 = a0
+    b1 = -2 * (wa ** 2 - 1) / den; b2 = (-1 + np.sqrt(2) * wa - wa ** 2) / den
+    def run(u):
+        y = np.zeros_like(u); y[:2] = u[:2]
+        for i in range(2, len(u)):
+            y[i] = a0 * u[i] + a1 * u[i - 1] + a2 * u[i - 2] + b1 * y[i - 1] + b2 * y[i - 2]
+        return y
+    return run(run(x)[::-1])[::-1]
+dt_s = float(np.median(np.diff(t))) * 1e-3
+F_cfc = cfc(F, dt_s, 600)
+m["PCF_CFC600_kN"] = float(F_cfc[sl].max())
+m["CFE_CFC600"] = MCF / m["PCF_CFC600_kN"]
+m["impactor_peak_decel_CFC600_g"] = float(F_cfc[sl].max() * 1000.0 / m_imp / 9.81)
 m["impactor_peak_decel_g"] = float(acc_g.max())
 m["impactor_peak_decel_3ms_g"] = clip_peak(3.0)
 m["impactor_mean_decel_g"] = float(MCF * 1000.0 / m_imp / 9.81)
@@ -77,15 +93,16 @@ m["energy_error_max_abs_pct"] = max((abs(e) for e in errs), default=None)
 m["valid"] = bool(m["energy_error_max_abs_pct"] is not None and m["energy_error_max_abs_pct"] < 5.0
                   and abs(m["EA_vs_IE_mismatch"]) < 0.05)
 json.dump(m, open(os.path.join(a.case_dir, f"{a.case}_metrics.json"), "w"), indent=2)
-np.savetxt(os.path.join(a.case_dir, f"{a.case}_force_disp.csv"), np.column_stack([t, d, F]),
-           delimiter=",", header="time_ms,crush_mm,force_kN", comments="")
+np.savetxt(os.path.join(a.case_dir, f"{a.case}_force_disp.csv"), np.column_stack([t, d, F, F_cfc]),
+           delimiter=",", header="time_ms,crush_mm,force_kN,force_CFC600_kN", comments="")
 print(json.dumps(m, indent=2))
 
 if a.plot:
     import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
     fig, ax = plt.subplots(figsize=(6, 3.8), dpi=130)
     ax.plot(d, F, lw=0.9, color="#bbb")
-    ax.plot(d_, F_, lw=1.0, color="#2a6fdb")
+    ax.plot(d_, F_, lw=0.8, color="#9bbcf0", label="raw (5 µs intervals)")
+    ax.plot(d_, F_cfc[sl], lw=1.2, color="#2a6fdb", label="CFC600")
     ax.axhline(MCF, ls="--", lw=1, color="#d9534f", label=f"MCF {MCF:.1f} kN")
     ax.axvline(stroke, ls=":", lw=1, color="#555", label=f"eval stroke {stroke:.0f} mm")
     ax.set_xlabel("Crush (mm)"); ax.set_ylabel("Wall force (kN)")
