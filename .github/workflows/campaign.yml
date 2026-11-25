@@ -80,6 +80,7 @@ jobs:
           echo "engine_wall_s=$(( $(date +%s) - S ))" | tee runtime.txt
           tail -4 engine.log
           python3 ../scripts/post_crashbox.py . --case $C || echo "postprocess failed"
+          if [ -f ${C}T01a ]; then python3 ../scripts/animate.py . --case $C || echo "animation failed"; rm -f ${C}T01a; fi
           rm -f *.rst ${C}A0* ${C}_0000.rad
       - name: Commit results
         if: always()
