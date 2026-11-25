@@ -14,10 +14,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view --repo OpenRadioss/OpenRadioss --json tagName,publishedAt,assets \
-            > release.json
-          cat release.json | head -c 2000
-          gh release download --repo OpenRadioss/OpenRadioss --pattern 'OpenRadioss_linux64.zip'
+          gh release list --repo OpenRadioss/OpenRadioss --limit 5
+          TAG=$(gh release list --repo OpenRadioss/OpenRadioss --limit 1 --json tagName -q '.[0].tagName')
+          echo "Using tag $TAG"
+          gh release view "$TAG" --repo OpenRadioss/OpenRadioss --json tagName,publishedAt,url,assets > release.json
+          head -c 3000 release.json; echo
+          gh release download "$TAG" --repo OpenRadioss/OpenRadioss --pattern 'OpenRadioss_linux64.zip'
           sha256sum OpenRadioss_linux64.zip | tee OpenRadioss_linux64.zip.sha256
           ls -l
       - name: Upload as workflow artifact
