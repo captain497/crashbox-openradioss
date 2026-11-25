@@ -145,11 +145,15 @@ def s_to_xy(s, Hs):
 
 pts2 = {}      # key -> index
 coords2 = []
-def pid(xy):
-    k = (round(xy[0], 4), round(xy[1], 4))
-    if k not in pts2:
-        pts2[k] = len(coords2); coords2.append(xy)
-    return pts2[k]
+def pid(xy):  # merge points closer than 1e-4 mm (rounding alone can split a node in two)
+    gx, gy = math.floor(xy[0] / 0.01), math.floor(xy[1] / 0.01)
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            for i in pts2.get((gx + dx, gy + dy), ()):
+                if math.dist(coords2[i], xy) < 1e-4:
+                    return i
+    pts2.setdefault((gx, gy), []).append(len(coords2)); coords2.append(xy)
+    return len(coords2) - 1
 
 def ring(Hs):
     """Uniform ring on square Hs with core attachment points snapped/inserted. Returns edges, snap(pt)."""
