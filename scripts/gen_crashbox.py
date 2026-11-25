@@ -38,6 +38,8 @@ p.add_argument("--dt_cst", type=float, default=0.0)    # /DT/NODA/CST target (ms
 p.add_argument("--anim", type=int, default=1)
 p.add_argument("--wall_slide", type=int, default=1)  # RWALL: 0 = sliding, 1 = tied (nodes stick to the impactor face)
 p.add_argument("--ishell", type=int, default=24)    # 24 = QEPH
+p.add_argument("--car", type=int, default=0)          # 1 = simplified half-car: box + rail spring + car mass into a FIXED rigid wall
+p.add_argument("--rail_kN", type=float, default=180.0) # car mode: crush force plateau of the lumped rest-of-front structure (per side)
 p.add_argument("--out", default=".")
 a = p.parse_args()
 
@@ -222,7 +224,7 @@ eps0 = 1.0e-3
 mass_tube = rho * P * T * L
 mass_core = rho * core_len * a.tc * L + rho * 8 * Hi * TI * L
 v = a.v; mass_g = a.mass_kg * 1000.0
-tend = a.tend if a.tend > 0 else 1.15 * a.stroke_frac * L / v   # ms (speed ~ constant: heavy wall)
+tend = a.tend if a.tend > 0 else (100.0 if a.car else 1.15 * a.stroke_frac * L / v)   # ms (speed ~ constant: heavy wall)
 
 def f20(*vals): return "".join(f"{x:20.10g}" for x in vals)
 def i10(*vals): return "".join(f"{int(x):10d}" for x in vals)
@@ -249,15 +251,36 @@ if sh_core:
 if sh_in:
     deck.append(prop(3, "INNER_TUBE_SHELL", TI))
     deck.append("/PART/3\nINNER_TUBE\n" + i10(3, 1, 0))
-deck.append("/NODE\n" + "\n".join(i10(i) + f20(x, y, z) for i, x, y, z in nodes) +
-            "\n" + i10(wall_node) + f20(0.0, 0.0, zw))
+B_node, C_node = wall_node, wall_node + 1   # car mode: box mount (rigid body master) and car mass node
+extra = (i10(B_node) + f20(0.0, 0.0, -10.0) + "\n" + i10(C_node) + f20(0.0, 0.0, -1000.0)) if a.car else (i10(wall_node) + f20(0.0, 0.0, zw))
+deck.append("/NODE\n" + "\n".join(i10(i) + f20(x, y, z) for i, x, y, z in nodes) + "\n" + extra)
 deck.append("/SHELL/1\n" + "\n".join(i10(*e) for e in sh_tube))
 if sh_core:
     deck.append("/SHELL/2\n" + "\n".join(i10(*e) for e in sh_core))
 if sh_in:
     deck.append("/SHELL/3\n" + "\n".join(i10(*e) for e in sh_in))
 deck.append("/GRNOD/NODE/1\nBOTTOM\n" + idlist(bottom))
-deck.append("/BCS/1\nCLAMP_BOTTOM\n   111 111" + i10(0, 1))
+if not a.car:
+    deck.append("/BCS/1\nCLAMP_BOTTOM\n   111 111" + i10(0, 1))
+else:
+    # Simplified half-car (ASSUMED values): 5 kg box mount (rigid body), rail = elastic-plastic spring with
+    # 15 mm elastic ramp to a constant crush force rail_kN, 50% critical damping on the mount, car mass lumped at C.
+    car_g = a.mass_kg * 1000.0
+    F = a.rail_kN * 1000.0
+    deck.append("/RBODY/1\nBOX_MOUNT\n" + i10(B_node, 0, 0, 0) + f20(5000.0) + i10(1, 0, 0, 0) + "\n" +
+                f20(0, 0, 0) + "\n" + f20(0, 0, 0) + "\n" + i10(0, 0, 0))
+    deck.append("/GRNOD/NODE/5\nCAR_NODES\n" + i10(B_node, C_node))
+    deck.append("/BCS/2\nCAR_1D\n   110 111" + i10(0, 5))
+    deck.append("/GRNOD/NODE/6\nCAR_MASS\n" + i10(C_node))
+    deck.append("/ADMAS/0/1\nCAR_MASS\n" + f20(car_g) + i10(6))
+    deck.append("/FUNCT/9001\nRAIL_FORCE_VS_DEFLECTION\n" + "\n".join(f20(x, y) for x, y in
+                ((-5000, -F), (-15, -F), (0, 0), (15, F), (5000, F))))
+    deck.append("/PROP/TYPE4/9\nRAIL_SPRING\n" + f20(10.0) + B20 + i10(0, 0, 0) + "\n" + f20(F / 15.0, 0.5 * 2.0 * math.sqrt(F / 15.0 * 5000.0), 1, 0, 1) + "\n" +
+                i10(9001, 1, 0, 0, 0) + B20 + f20(0, 0) + "\n" + f20(0, 0, 0, 0))
+    deck.append("/PART/9\nRAIL\n" + i10(9, 0, 0))
+    deck.append("/SPRING/9\n" + i10(9000001, B_node, C_node))
+    deck.append("/INIVEL/TRA/1\nCAR_SPEED_BOX\n" + f20(0, 0, v) + i10(2, 0))
+    deck.append("/INIVEL/TRA/2\nCAR_SPEED_NODES\n" + f20(0, 0, v) + i10(5, 0))
 parts = "1" + (" 2" if sh_core else "") + (" 3" if sh_in else "")
 deck.append("/GRNOD/PART/2\nALL_NODES\n" + i10(*parts.split()))
 deck.append("/SURF/PART/3\nALL_SURF\n" + i10(*parts.split()))
@@ -266,10 +289,18 @@ deck.append("/INTER/TYPE7/1\nSELF_CONTACT\n" + i10(2, 3, 4, 0, 0) + B10 + i10(0,
             f20(1, 0.15, 0.5 * min(T, a.tc if sh_core else T, TI if sh_in else T), 0, 0) + "\n" +
             "       000" + B20 + i10(0) + f20(0, 0, 0) + "\n" +
             i10(0, 0) + f20(0) + i10(0, 0, 0) + f20(0) + i10(0))
-deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, a.wall_slide, 2, 1) + "\n" + f20(0, 0, 0) + "\n" +
-            f20(mass_g, 0, 0, -v) + "\n" + f20(0.0, 0.0, zw - 1.0))
+if a.car:
+    deck.append("/RWALL/PLANE/1\nFIXED_WALL\n" + i10(0, a.wall_slide, 2, 0) + "\n" + f20(0, 0, 0) + "\n" +
+                f20(0.0, 0.0, zw) + "\n" + f20(0.0, 0.0, zw - 1.0))
+else:
+    deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, a.wall_slide, 2, 1) + "\n" + f20(0, 0, 0) + "\n" +
+                f20(mass_g, 0, 0, -v) + "\n" + f20(0.0, 0.0, zw - 1.0))
 deck.append("/TH/RWALL/1\nWALL\nDEF\n" + i10(1))
-deck.append("/TH/NODE/2\nWALLNODE\nDEF\n" + i10(wall_node, 0))
+if a.car:
+    deck.append("/TH/NODE/2\nCAR_NODES\nDEF\n" + i10(B_node, 0) + "\n" + i10(C_node, 0))
+    deck.append("/TH/SPRING/5\nRAIL\nDEF\n" + i10(9000001))
+else:
+    deck.append("/TH/NODE/2\nWALLNODE\nDEF\n" + i10(wall_node, 0))
 deck.append("/TH/PART/3\nPART_ENERGY\nDEF\n" + "\n".join(i10(k) for k in parts.split()))
 if a.anim:
     deck.append("/ATH/NODE/4\nANIM_NODES\nDX        DY        DZ\n" +
@@ -284,7 +315,7 @@ with open(os.path.join(a.out, f"{a.name}_0001.rad"), "w") as fh:
     fh.write(f"/RUN/{a.name}/1\n{tend:.3f}\n/VERS/2024\n/TFILE/4\n0.005\n/ATFILE/4\n{tend/40:.4f}\n"
              f"/PRINT/-5000{dtcard}\n/RFILE/0\n10000000\n")
 
-info = dict(vars(a), n_nodes=len(nodes) + 1, n_shell_tube=len(sh_tube), n_shell_core=len(sh_core) + len(sh_in), n_shell_inner=len(sh_in),
+info = dict(vars(a), n_nodes=len(nodes) + (2 if a.car else 1), n_shell_tube=len(sh_tube), n_shell_core=len(sh_core) + len(sh_in), n_shell_inner=len(sh_in),
             mass_tube_g=mass_tube, mass_core_g=mass_core, mass_total_g=mass_tube + mass_core,
             core_rib_length_mm=core_len, KE_kJ=0.5 * mass_g * v ** 2 / 1e6, tend_ms=tend, **core_info)
 with open(os.path.join(a.out, f"{a.name}_info.json"), "w") as fh:

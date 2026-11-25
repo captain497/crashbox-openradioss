@@ -30,7 +30,15 @@ with open(os.path.join(a.case_dir, f"{a.case}_0000.rad")) as f:
         elif sec == "SHELL":
             v = [int(line[i:i + 10]) for i in range(0, 50, 10)]
             shells.append(v[1:5])
-ath_ids = sorted(i for i in nodes if i != max(nodes))   # all tube nodes, deck order
+ath_ids, in_ath = [], False   # node ids listed under /ATH/NODE, in deck order
+with open(os.path.join(a.case_dir, f"{a.case}_0000.rad")) as f:
+    for line in f:
+        if line.startswith("/"):
+            in_ath = line.startswith("/ATH/NODE"); hdr = 0; continue
+        if in_ath and line[:10].strip().isdigit():
+            ath_ids.append(int(line[:10]))
+if not ath_ids:
+    ath_ids = sorted(i for i in nodes if i != max(nodes))
 idx = {nid: k for k, nid in enumerate(ath_ids)}
 X0 = np.array([nodes[i] for i in ath_ids])
 Q = np.array([[idx[n] for n in s] for s in shells])
