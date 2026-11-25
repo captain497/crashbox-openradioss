@@ -22,7 +22,9 @@ p.add_argument("--name", default="CB")
 p.add_argument("--width", type=float, default=80.0)    # outer tube mid-surface width (mm)
 p.add_argument("--length", type=float, default=200.0)  # crash box length (mm)
 p.add_argument("--t", type=float, default=2.0)         # tube wall thickness (mm)
-p.add_argument("--core", choices=["none", "reentrant"], default="none")
+p.add_argument("--core", choices=["none", "reentrant", "horsetail"], default="none")
+p.add_argument("--inner_frac", type=float, default=0.5)  # horsetail: inner tube width / outer width
+p.add_argument("--ti", type=float, default=0.0)        # horsetail: inner tube thickness (0 = tc)
 p.add_argument("--theta", type=float, default=20.0)    # re-entrant angle (deg)
 p.add_argument("--ncell", type=int, default=3)         # cells across the width
 p.add_argument("--beta", type=float, default=2.0)      # h/l cell aspect ratio
@@ -48,7 +50,8 @@ TOL = 1e-6
 # ---------------- core 2D network ----------------
 segs = []
 core_info = {}
-if a.core == "reentrant":
+Hi = a.inner_frac * H if a.core == "horsetail" else 0.0
+if a.core in ("reentrant", "horsetail"):
     th = math.radians(a.theta)
     l = W / (2 * a.ncell * math.cos(th))
     h = a.beta * l
@@ -72,7 +75,32 @@ if a.core == "reentrant":
             P6 = (x0 + px / 2, y0 - h / 2 + l * math.sin(th))
             raw += [(P1, P2), (P2, P3), (P3, P4), (P5, P6), (P6, P1)]
 
-    def clip(p0, p1):  # Liang-Barsky clip to the square
+    def lb(p0, p1, Hs):  # Liang-Barsky parameters of the segment inside the square of half-width Hs
+        x0, y0 = p0; dx = p1[0] - x0; dy = p1[1] - y0
+        t0, t1 = 0.0, 1.0
+        for pp, q in ((-dx, x0 + Hs), (dx, Hs - x0), (-dy, y0 + Hs), (dy, Hs - y0)):
+            if abs(pp) < 1e-12:
+                if q < 0: return None
+            else:
+                r = q / pp
+                if pp < 0: t0 = max(t0, r)
+                else: t1 = min(t1, r)
+        if t1 - t0 < 1e-9: return None
+        return t0, t1
+
+    def clip_all(p0, p1):  # pieces inside the outer square and (horsetail) outside the inner square
+        o = lb(p0, p1, H)
+        if o is None: return []
+        pieces = [o]
+        if Hi > 0:
+            i = lb(p0, p1, Hi)
+            if i is not None:
+                pieces = [(o[0], min(o[1], i[0])), (max(o[0], i[1]), o[1])]
+                pieces = [q for q in pieces if q[1] - q[0] > 1e-9]
+        dx = p1[0] - p0[0]; dy = p1[1] - p0[1]
+        return [((p0[0] + t0 * dx, p0[1] + t0 * dy), (p0[0] + t1 * dx, p0[1] + t1 * dy)) for t0, t1 in pieces]
+
+    def clip(p0, p1):  # unused legacy
         x0, y0 = p0; dx = p1[0] - x0; dy = p1[1] - y0
         t0, t1 = 0.0, 1.0
         for pp, q in ((-dx, x0 + H), (dx, H - x0), (-dy, y0 + H), (dy, H - y0)):
@@ -87,52 +115,34 @@ if a.core == "reentrant":
 
     seen = set()
     for p0, p1 in raw:
-        c = clip(p0, p1)
-        if c is None: continue
-        q0, q1 = c
-        # drop ribs lying on the tube wall itself
-        if (abs(q0[0] - q1[0]) < 1e-6 and abs(abs(q0[0]) - H) < 1e-6) or \
-           (abs(q0[1] - q1[1]) < 1e-6 and abs(abs(q0[1]) - H) < 1e-6):
+      for q0, q1 in clip_all(p0, p1):
+        # drop ribs lying on a tube wall itself
+        if any((abs(q0[0] - q1[0]) < 1e-6 and abs(abs(q0[0]) - Hs) < 1e-6) or
+               (abs(q0[1] - q1[1]) < 1e-6 and abs(abs(q0[1]) - Hs) < 1e-6) for Hs in (H, Hi) if Hs > 0):
             continue
         key = tuple(sorted([(round(q0[0], 5), round(q0[1], 5)), (round(q1[0], 5), round(q1[1], 5))]))
         if key in seen or key[0] == key[1]: continue
         seen.add(key)
         segs.append(key)
 
-# ---------------- perimeter positions (tube) ----------------
-def on_wall(pt):
+# ---------------- tube rings (outer, and inner for horsetail) ----------------
+def on_sq(pt, Hs):
     x, y = pt
-    return abs(abs(x) - H) < 1e-6 or abs(abs(y) - H) < 1e-6
+    return Hs > 0 and (abs(abs(x) - Hs) < 1e-6 and abs(y) <= Hs + 1e-6 or
+                       abs(abs(y) - Hs) < 1e-6 and abs(x) <= Hs + 1e-6)
 
-def perim_s(pt):  # arc-length position on the square, CCW from (-H,-H)
-    x, y = pt
-    if abs(y + H) < 1e-6: return x + H
-    if abs(x - H) < 1e-6: return W + (y + H)
-    if abs(y - H) < 1e-6: return 2 * W + (H - x)
-    return 3 * W + (H - y)
+def perim_s(pt, Hs):  # arc-length position on the square, CCW from (-Hs,-Hs)
+    x, y = pt; Ws = 2 * Hs
+    if abs(y + Hs) < 1e-6: return x + Hs
+    if abs(x - Hs) < 1e-6: return Ws + (y + Hs)
+    if abs(y - Hs) < 1e-6: return 2 * Ws + (Hs - x)
+    return 3 * Ws + (Hs - y)
 
-def s_to_xy(s):
-    s = s % (4 * W)
-    k = int(s // W); f = s - k * W
-    return [(-H + f, -H), (H, -H + f), (H - f, H), (-H, H - f)][min(k, 3)]
+def s_to_xy(s, Hs):
+    Ws = 2 * Hs; s = s % (4 * Ws)
+    k = int(s // Ws); f = s - k * Ws
+    return [(-Hs + f, -Hs), (Hs, -Hs + f), (Hs - f, Hs), (-Hs, Hs - f)][min(k, 3)]
 
-P = 4 * W
-ns_side = max(2, round(W / h_el))
-s_uniform = [k * W / ns_side for k in range(4 * ns_side)]
-s_core = sorted({round(perim_s(q), 5) % P for sg in segs for q in sg if on_wall(q)})
-# snap core attachment points to the uniform grid when close, else insert
-s_list = list(s_uniform)
-snap = {}
-for sc in s_core:
-    k = min(range(len(s_uniform)), key=lambda i: min(abs(s_uniform[i] - sc), P - abs(s_uniform[i] - sc)))
-    d = min(abs(s_uniform[k] - sc), P - abs(s_uniform[k] - sc))
-    if d < 0.35 * W / ns_side:
-        snap[sc] = s_uniform[k]
-    else:
-        snap[sc] = sc; s_list.append(sc)
-s_list = sorted(set(round(s, 6) for s in s_list))
-
-# ---------------- 2D points and lines ----------------
 pts2 = {}      # key -> index
 coords2 = []
 def pid(xy):
@@ -141,14 +151,36 @@ def pid(xy):
         pts2[k] = len(coords2); coords2.append(xy)
     return pts2[k]
 
-tube_ring = [pid(s_to_xy(s)) for s in s_list]
-tube_edges = [(tube_ring[i], tube_ring[(i + 1) % len(tube_ring)]) for i in range(len(tube_ring))]
+def ring(Hs):
+    """Uniform ring on square Hs with core attachment points snapped/inserted. Returns edges, snap(pt)."""
+    Ws = 2 * Hs; Pp = 4 * Ws
+    ns_side = max(2, round(Ws / h_el))
+    s_uniform = [k * Ws / ns_side for k in range(4 * ns_side)]
+    s_core = sorted({round(perim_s(q, Hs), 5) % Pp for sg in segs for q in sg if on_sq(q, Hs)})
+    s_list = list(s_uniform); snap = {}
+    for sc in s_core:
+        k = min(range(len(s_uniform)), key=lambda i: min(abs(s_uniform[i] - sc), Pp - abs(s_uniform[i] - sc)))
+        d = min(abs(s_uniform[k] - sc), Pp - abs(s_uniform[k] - sc))
+        if d < 0.35 * Ws / ns_side: snap[sc] = s_uniform[k]
+        else: snap[sc] = sc; s_list.append(sc)
+    s_list = sorted(set(round(x, 6) for x in s_list))
+    ids = [pid(s_to_xy(x, Hs)) for x in s_list]
+    edges = [(ids[i], ids[(i + 1) % len(ids)]) for i in range(len(ids))]
+    return edges, (lambda q: s_to_xy(snap[round(perim_s(q, Hs), 5) % Pp], Hs))
+
+P = 4 * W
+tube_edges, snap_out = ring(H)
+inner_edges, snap_in = ring(Hi) if Hi > 0 else ([], None)
+
+def snap_pt(q):
+    if on_sq(q, H): return snap_out(q)
+    if Hi > 0 and on_sq(q, Hi): return snap_in(q)
+    return q
 
 core_edges = []
 core_len = 0.0
 for q0, q1 in segs:
-    q0 = s_to_xy(snap[round(perim_s(q0), 5) % P]) if on_wall(q0) else q0
-    q1 = s_to_xy(snap[round(perim_s(q1), 5) % P]) if on_wall(q1) else q1
+    q0 = snap_pt(q0); q1 = snap_pt(q1)
     Ls = math.dist(q0, q1)
     if Ls < 0.3 * h_el: continue
     core_len += Ls
@@ -170,7 +202,9 @@ def extrude(edges, eid0):
     return out
 sh_tube = extrude(tube_edges, 0)
 sh_core = extrude(core_edges, len(sh_tube)) if core_edges else []
-bottom = sorted({nid(i, 0) for e in tube_edges + core_edges for i in e})
+sh_in = extrude(inner_edges, len(sh_tube) + len(sh_core)) if inner_edges else []
+TI = a.ti if a.ti > 0 else a.tc
+bottom = sorted({nid(i, 0) for e in tube_edges + core_edges + inner_edges for i in e})
 wall_node = len(nodes) + 1
 zw = L + 0.5
 
@@ -182,7 +216,7 @@ rho, E, nu = 2.70e-3, 68850.0, 0.33
 A, B, n, C = 285.0, 199.0, 0.532, 0.002
 eps0 = 1.0e-3
 mass_tube = rho * P * T * L
-mass_core = rho * core_len * a.tc * L
+mass_core = rho * core_len * a.tc * L + rho * 8 * Hi * TI * L
 v = a.v; mass_g = a.mass_kg * 1000.0
 tend = a.tend if a.tend > 0 else 1.15 * a.stroke_frac * L / v   # ms (speed ~ constant: heavy wall)
 
@@ -208,19 +242,24 @@ deck.append("/PART/1\nTUBE\n" + i10(1, 1, 0))
 if sh_core:
     deck.append(prop(2, "CORE_SHELL", a.tc))
     deck.append("/PART/2\nCORE\n" + i10(2, 1, 0))
+if sh_in:
+    deck.append(prop(3, "INNER_TUBE_SHELL", TI))
+    deck.append("/PART/3\nINNER_TUBE\n" + i10(3, 1, 0))
 deck.append("/NODE\n" + "\n".join(i10(i) + f20(x, y, z) for i, x, y, z in nodes) +
             "\n" + i10(wall_node) + f20(0.0, 0.0, zw))
 deck.append("/SHELL/1\n" + "\n".join(i10(*e) for e in sh_tube))
 if sh_core:
     deck.append("/SHELL/2\n" + "\n".join(i10(*e) for e in sh_core))
+if sh_in:
+    deck.append("/SHELL/3\n" + "\n".join(i10(*e) for e in sh_in))
 deck.append("/GRNOD/NODE/1\nBOTTOM\n" + idlist(bottom))
 deck.append("/BCS/1\nCLAMP_BOTTOM\n   111 111" + i10(0, 1))
-parts = "1" if not sh_core else "1 2"
+parts = "1" + (" 2" if sh_core else "") + (" 3" if sh_in else "")
 deck.append("/GRNOD/PART/2\nALL_NODES\n" + i10(*parts.split()))
 deck.append("/SURF/PART/3\nALL_SURF\n" + i10(*parts.split()))
 deck.append("/INTER/TYPE7/1\nSELF_CONTACT\n" + i10(2, 3, 4, 0, 0) + B10 + i10(0, 0, 0, 0) + "\n" +
             f20(0, 0, 0) + B20 + i10(0) + "\n" + f20(0, 0, 0, 0) + i10(0, 0) + "\n" +
-            f20(1, 0.15, 0.5 * min(T, a.tc if sh_core else T), 0, 0) + "\n" +
+            f20(1, 0.15, 0.5 * min(T, a.tc if sh_core else T, TI if sh_in else T), 0, 0) + "\n" +
             "       000" + B20 + i10(0) + f20(0, 0, 0) + "\n" +
             i10(0, 0) + f20(0) + i10(0, 0, 0) + f20(0) + i10(0))
 deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, a.wall_slide, 2, 1) + "\n" + f20(0, 0, 0) + "\n" +
@@ -241,12 +280,12 @@ with open(os.path.join(a.out, f"{a.name}_0001.rad"), "w") as fh:
     fh.write(f"/RUN/{a.name}/1\n{tend:.3f}\n/VERS/2024\n/TFILE/4\n0.005\n/ATFILE/4\n{tend/40:.4f}\n"
              f"/PRINT/-5000{dtcard}\n/RFILE/0\n10000000\n")
 
-info = dict(vars(a), n_nodes=len(nodes) + 1, n_shell_tube=len(sh_tube), n_shell_core=len(sh_core),
+info = dict(vars(a), n_nodes=len(nodes) + 1, n_shell_tube=len(sh_tube), n_shell_core=len(sh_core) + len(sh_in), n_shell_inner=len(sh_in),
             mass_tube_g=mass_tube, mass_core_g=mass_core, mass_total_g=mass_tube + mass_core,
             core_rib_length_mm=core_len, KE_kJ=0.5 * mass_g * v ** 2 / 1e6, tend_ms=tend, **core_info)
 with open(os.path.join(a.out, f"{a.name}_info.json"), "w") as fh:
     json.dump(info, fh, indent=2)
 with open(os.path.join(a.out, f"{a.name}_section.json"), "w") as fh:
-    json.dump(dict(points=coords2, tube=tube_edges, core=core_edges), fh)
+    json.dump(dict(points=coords2, tube=tube_edges + inner_edges, core=core_edges), fh)
 print(json.dumps({k: info[k] for k in ("n_nodes", "n_shell_tube", "n_shell_core", "mass_tube_g",
                                        "mass_core_g", "mass_total_g", "tend_ms")}))

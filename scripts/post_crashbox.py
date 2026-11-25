@@ -21,7 +21,7 @@ p.add_argument("--plot", type=int, default=1)
 a = p.parse_args()
 info = json.load(open(os.path.join(a.case_dir, f"{a.case}_info.json")))
 L = info["length"]; mass_kg = info["mass_total_g"] / 1000.0
-npart = 2 if info["n_shell_core"] > 0 else 1
+npart = 1 + (info["n_shell_core"] - info.get("n_shell_inner", 0) > 0) + (info.get("n_shell_inner", 0) > 0)
 
 t, blocks = th.time_series(os.path.join(a.case_dir, f"{a.case}T01"))
 P = np.array([b[1] for b in blocks]).reshape(len(t), npart, -1)
