@@ -45,6 +45,8 @@ cored = info["core"] != "none"
 m = dict(case=a.case, core=info["core"], theta=info["theta"] if cored else None,
          ncell=info["ncell"] if cored else None, beta=info["beta"] if cored else None,
          tc=info["tc"] if cored else None, t=info["t"],
+         trig=info.get("trig", 0.0), core_gap=info.get("core_gap", 0.0) if cored else None,
+         core_bevel=info.get("core_bevel", 0.0) if cored else None, mat=info.get("mat", "aa6061"),
          mass_g=info["mass_total_g"], eval_stroke_mm=stroke, reached_eval_stroke=bool(reached),
          time_at_eval_ms=float(t_[-1]), sim_end_ms=float(t[-1]),
          PCF_kN=PCF, MCF_kN=MCF, EA_J=float(EA[-1]), SEA_kJ_per_kg=float(EA[-1] / mass_kg / 1000.0),

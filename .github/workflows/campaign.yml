@@ -36,8 +36,8 @@ jobs:
           for r in rows:
               core = r.get("core", "reentrant") or "reentrant"
               args = f"--core {core}"
-              for k in ("theta", "tc", "ncell", "beta", "t", "width", "length", "inner_frac", "ti", "esize", "car", "rail_kN", "tend"):
-                  if r.get(k): args += f" --{k} {r[k]}"
+              for k, v in r.items():
+                  if k not in ("case", "core") and v not in (None, ""): args += f" --{k} {v}"
               inc.append({"case": r["case"], "args": args})
           print("matrix=" + json.dumps({"include": inc}))
           PY

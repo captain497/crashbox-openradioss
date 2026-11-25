@@ -40,6 +40,12 @@ p.add_argument("--wall_slide", type=int, default=1)  # RWALL: 0 = sliding, 1 = t
 p.add_argument("--ishell", type=int, default=24)    # 24 = QEPH
 p.add_argument("--car", type=int, default=0)          # 1 = simplified half-car: box + rail spring + car mass into a FIXED rigid wall
 p.add_argument("--rail_kN", type=float, default=180.0) # car mode: crush force plateau of the lumped rest-of-front structure (per side)
+p.add_argument("--trig", type=float, default=0.0)      # crush trigger: dent amplitude (mm) of a band near the impact end; 0 = none
+p.add_argument("--trig_z", type=float, default=12.0)   # trigger band centre, distance from the impact end (mm)
+p.add_argument("--trig_w", type=float, default=12.0)   # trigger band half-width (mm)
+p.add_argument("--core_gap", type=float, default=0.0)  # core recessed this far below the impact end (mm)
+p.add_argument("--core_bevel", type=float, default=0.0)  # extra recess growing linearly across the width (mm): staged core engagement
+p.add_argument("--mat", choices=["aa6061", "aa7075", "aa2024"], default="aa6061")  # alloy of tube and core
 p.add_argument("--out", default=".")
 a = p.parse_args()
 
@@ -197,7 +203,19 @@ for q0, q1 in segs:
 n2 = len(coords2)
 def nid(i2, j):
     return j * n2 + i2 + 1
-nodes = [(nid(i, j), x, y, j * hz) for j in range(nz + 1) for i, (x, y) in enumerate(coords2)]
+def trig_xy(i, j):
+    """Crush trigger: smooth dent band near the impact end; faces x=+-H pushed in, faces y=+-H pushed out (square-tube collapse mode)."""
+    x, y = coords2[i]; z = j * hz
+    if a.trig <= 0 or not on_sq((x, y), H): return x, y
+    u = z - (L - a.trig_z)
+    if abs(u) >= a.trig_w: return x, y
+    f = a.trig * math.cos(math.pi * u / (2 * a.trig_w)) ** 2
+    if abs(abs(x) - H) < 1e-6 and abs(abs(y) - H) > 1e-6:
+        return x - math.copysign(f * math.sin(math.pi * (y + H) / (2 * H)), x), y
+    if abs(abs(y) - H) < 1e-6 and abs(abs(x) - H) > 1e-6:
+        return x, y + math.copysign(f * math.sin(math.pi * (x + H) / (2 * H)), y)
+    return x, y
+nodes = [(nid(i, j), *trig_xy(i, j), j * hz) for j in range(nz + 1) for i in range(n2)]
 
 def extrude(edges, eid0):
     out = []; e = eid0
@@ -207,11 +225,28 @@ def extrude(edges, eid0):
             out.append((e, nid(i0, j), nid(i1, j), nid(i1, j + 1), nid(i0, j + 1)))
     return out
 sh_tube = extrude(tube_edges, 0)
-sh_core = extrude(core_edges, len(sh_tube)) if core_edges else []
+def core_top(e):  # highest z the core rib may reach (recess + bevel)
+    xm = 0.5 * (coords2[e[0]][0] + coords2[e[1]][0])
+    return L - a.core_gap - a.core_bevel * (xm + H) / W
+def extrude_core(edges, eid0):
+    out = []; e = eid0
+    for j in range(nz):
+        for ed in edges:
+            if (j + 1) * hz > core_top(ed) + 1e-6: continue
+            e += 1
+            out.append((e, nid(ed[0], j), nid(ed[1], j), nid(ed[1], j + 1), nid(ed[0], j + 1)))
+    return out
+sh_core = extrude_core(core_edges, len(sh_tube)) if core_edges else []
 sh_in = extrude(inner_edges, len(sh_tube) + len(sh_core)) if inner_edges else []
 TI = a.ti if a.ti > 0 else a.tc
-bottom = sorted({nid(i, 0) for e in tube_edges + core_edges + inner_edges for i in e})
-wall_node = len(nodes) + 1
+used = {n for e in sh_tube + sh_core + sh_in for n in e[1:]}
+nodes = [nd for nd in nodes if nd[0] in used]
+bottom = sorted({nid(i, 0) for e in tube_edges + core_edges + inner_edges for i in e} & used)
+def q_area(e):
+    P = [np.array(nmap[k]) for k in e[1:]]
+    return 0.5 * np.linalg.norm(np.cross(P[2] - P[0], P[3] - P[1]))
+nmap = {i: (x, y, z) for i, x, y, z in nodes}
+wall_node = max(nd[0] for nd in nodes) + 1
 zw = L + 0.5
 
 # AA6061-T6 from the tensile tests of Aktas et al. (2023), Table 1 and Fig. 8b: rho 2700 kg/m3,
@@ -221,8 +256,13 @@ zw = L + 0.5
 rho, E, nu = 2.70e-3, 68850.0, 0.33
 A, B, n, C = 285.0, 199.0, 0.532, 0.002
 eps0 = 1.0e-3
-mass_tube = rho * P * T * L
-mass_core = rho * core_len * a.tc * L + rho * 8 * Hi * TI * L
+# Alternative alloys, Johnson-Cook constants as published (eps0 = 1/s):
+#   AA7075-T6: Brar et al. (2009), A 546, B 678, n 0.71, C 0.024; rho 2810, E 71.7 GPa
+#   AA2024-T3: Lesuer (2000),     A 369, B 684, n 0.73, C 0.0083; rho 2780, E 73.1 GPa
+if a.mat == "aa7075": rho, E, nu, A, B, n, C = 2.81e-3, 71700.0, 0.33, 546.0, 678.0, 0.71, 0.024
+if a.mat == "aa2024": rho, E, nu, A, B, n, C = 2.78e-3, 73100.0, 0.33, 369.0, 684.0, 0.73, 0.0083
+mass_tube = rho * T * sum(q_area(e) for e in sh_tube)
+mass_core = rho * a.tc * sum(q_area(e) for e in sh_core) + rho * TI * sum(q_area(e) for e in sh_in)
 v = a.v; mass_g = a.mass_kg * 1000.0
 tend = a.tend if a.tend > 0 else (100.0 if a.car else 1.15 * a.stroke_frac * L / v)   # ms (speed ~ constant: heavy wall)
 
@@ -240,7 +280,7 @@ deck.append("#RADIOSS STARTER\n/BEGIN\n" + f"{a.name:<80s}\n" + i10(2024) + "\n"
 deck.append(f"/TITLE\nAA6061-T6 crash box, core={a.core}")
 deck.append("/ANALY\n" + i10(0, 0, 1, 0))
 deck.append("/RANDOM\n" + f20(1.0e-4))
-deck.append("/MAT/PLAS_JOHNS/1\nAA6061-T6\n" + f20(rho) + "\n" + f20(E, nu) + i10(0) + "\n" +
+deck.append(f"/MAT/PLAS_JOHNS/1\n{a.mat.upper()}\n" + f20(rho) + "\n" + f20(E, nu) + i10(0) + "\n" +
             f20(A, B, n, 0.0, 0.0) + "\n" + f20(C, eps0) + i10(1, 1) + f20(10.0, 0.0) + "\n" +
             f20(0, 0, 0, 0))
 deck.append(prop(1, "TUBE_SHELL", T))
