@@ -29,7 +29,7 @@ p.add_argument("--runs", default="", help="comma-separated GitHub run ids to acc
 a = p.parse_args()
 os.makedirs(a.out, exist_ok=True)
 
-df = pd.read_csv(a.table)
+df = pd.read_csv(a.table, dtype={"gh_run_id": str})
 df = df[df["case"].str.match(r"^D\d+$") & (df["valid"].astype(str) == "True")].copy()
 if a.runs:
     df = df[df["gh_run_id"].astype(str).isin(a.runs.split(","))]
