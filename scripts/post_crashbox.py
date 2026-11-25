@@ -41,8 +41,10 @@ PCF = float(F_.max()); stroke = float(d_[-1])
 MCF = float(EA[-1] / stroke)
 IE = P[k_end, :, 0].sum() / 1e3; HE = P[k_end, :, 6].sum() / 1e3
 # energy balance error reported by the engine at this step: (IE+KE - KE0 - Wext)/... use globals
-m = dict(case=a.case, core=info["core"], theta=info.get("theta"), ncell=info.get("ncell"),
-         beta=info.get("beta"), tc=info.get("tc"), t=info["t"],
+cored = info["core"] != "none"
+m = dict(case=a.case, core=info["core"], theta=info["theta"] if cored else None,
+         ncell=info["ncell"] if cored else None, beta=info["beta"] if cored else None,
+         tc=info["tc"] if cored else None, t=info["t"],
          mass_g=info["mass_total_g"], eval_stroke_mm=stroke, reached_eval_stroke=bool(reached),
          time_at_eval_ms=float(t_[-1]), sim_end_ms=float(t[-1]),
          PCF_kN=PCF, MCF_kN=MCF, EA_J=float(EA[-1]), SEA_kJ_per_kg=float(EA[-1] / mass_kg / 1000.0),
