@@ -107,6 +107,9 @@ deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, 0, 2, 0) + "\n" + f20(
 deck.append("/TH/RWALL/1\nWALL\nDEF\n" + i10(1))
 deck.append("/TH/NODE/2\nWALLNODE\nDEF\n" + i10(wall_node, 0))
 deck.append("/TH/PART/3\nTUBE_ENERGY\nDEF\n" + i10(1))
+# coarse-in-time nodal displacements of every tube node, written to the A-file, for animation
+deck.append("/ATH/NODE/4\nANIM_NODES\nDX        DY        DZ\n" +
+            "\n".join(i10(i, 0) for i, *_ in node_list))
 deck.append("/END")
 
 os.makedirs(a.out, exist_ok=True)
@@ -118,6 +121,8 @@ eng = f"""/RUN/{a.name}/1
 /VERS/2024
 /TFILE/4
 0.01
+/ATFILE/4
+0.5
 /ANIM/DT
 0. 0.5
 /ANIM/ELEM/EPSP
