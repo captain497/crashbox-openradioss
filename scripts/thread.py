@@ -44,3 +44,34 @@ def dump(path, limit=200):
 
 if __name__ == "__main__":
     dump(sys.argv[1], int(sys.argv[2]) if len(sys.argv) > 2 else 200)
+
+
+def time_series(path):
+    """Split the T01 data section into time steps.
+
+    Returns (times, blocks) where blocks[k] is a list of float arrays, one per
+    record that follows the time record at step k (global vars, then each TH group
+    in deck order). The data section starts at the first 4-byte record that holds
+    time 0.0 after the header.
+    """
+    import numpy as np
+    recs = list(records(path))
+    # first 4-byte record whose float value is 0.0 and that is followed by the
+    # 88-byte global record (22 globals) marks t=0
+    start = None
+    for k, r in enumerate(recs):
+        if len(r) == 4 and struct.unpack(">f", r)[0] == 0.0 and k + 1 < len(recs) and len(recs[k + 1]) > 4:
+            start = k
+            break
+    times, blocks, cur = [], [], None
+    for r in recs[start:]:
+        a = np.frombuffer(r, dtype=">f4").astype(float)
+        if len(r) == 4:
+            times.append(a[0]); cur = []; blocks.append(cur)
+        else:
+            cur.append(a)
+    # drop an incomplete final step
+    nrec = len(blocks[0])
+    while blocks and len(blocks[-1]) != nrec:
+        blocks.pop(); times.pop()
+    return np.array(times), blocks

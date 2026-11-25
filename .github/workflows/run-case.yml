@@ -11,7 +11,7 @@ on:
         default: ""
       build_run_id:
         description: Run id of a successful "Build OpenRadioss" run
-        default: "45562977905"
+        default: "45568072723"
 
 permissions:
   contents: write
@@ -48,12 +48,21 @@ jobs:
           export OMP_NUM_THREADS=$(nproc)
           ulimit -s unlimited
           cd work
+          sudo apt-get install -y -q time >/dev/null 2>&1 || true
           /usr/bin/time -v $OPENRADIOSS_PATH/exec/starter_linux64_gf -i ${{ inputs.case }}_0000.rad -np 1 > starter.stdout 2> starter.time || true
           tail -30 ${{ inputs.case }}_0000.out || tail -30 starter.stdout
           /usr/bin/time -v $OPENRADIOSS_PATH/exec/engine_linux64_gf -i ${{ inputs.case }}_0001.rad -nt $OMP_NUM_THREADS > engine.stdout 2> engine.time || true
           tail -40 engine.stdout
           grep -E "Elapsed|Maximum resident" starter.time engine.time
           ls -la
+      - name: Post-process (metrics, plots, animation)
+        if: always()
+        run: |
+          pip install -q matplotlib numpy
+          M=$(grep -o "tube_mass=[0-9.]*" work/gen.log | cut -d= -f2)
+          python3 scripts/postprocess.py work --case ${{ inputs.case }} --tube_mass_g $M | tee work/metrics.log
+          python3 scripts/animate.py work --case ${{ inputs.case }} || true
+          rm -f work/*.rst work/${{ inputs.case }}A0*
       - name: Save raw results to the results branch
         if: always()
         run: |

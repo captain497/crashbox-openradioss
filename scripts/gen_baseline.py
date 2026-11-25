@@ -19,6 +19,8 @@ p.add_argument("--mass_kg", type=float, default=100.0) # impactor mass (kg)
 p.add_argument("--v", type=float, default=10.0)        # impact speed (m/s)
 p.add_argument("--tend", type=float, default=30.0)     # end time (ms)
 p.add_argument("--trigger", type=float, default=0.0)   # optional dent depth (mm), 0 = none
+p.add_argument("--istf", type=int, default=0)        # TYPE7 contact stiffness option
+p.add_argument("--dtmin_cst", type=float, default=0.0) # if >0: /DT/NODA/CST target time step (ms), adds small mass
 p.add_argument("--out", default=".")
 a = p.parse_args()
 
@@ -84,7 +86,7 @@ deck.append("/TITLE\nAA6061-T6 square tube axial crush (placeholder geometry)")
 deck.append("/ANALY\n#    N2D3D     INTEG   IPARITH      ISUB\n" + i10(0, 0, 1, 0))
 deck.append("/RANDOM\n" + f20(1.0e-4))
 deck.append("/MAT/PLAS_JOHNS/1\nAA6061-T6\n" + f20(rho) + "\n" + f20(E, nu) + i10(0) + "\n" +
-            f20(A, B, n, 0.0, 0.0) + "\n" + f20(C, eps0) + i10(1, 0) + f20(0.0, 0.0) + "\n" +
+            f20(A, B, n, 0.0, 0.0) + "\n" + f20(C, eps0) + i10(1, 1) + f20(10.0, 0.0) + "\n" +  # Fsmooth=1, Fcut=10 kHz
             f20(0, 0, 0, 0))
 deck.append("/PROP/SHELL/1\nTUBE_SHELL\n" + i10(24, 0, 0, 0, 0) + B10 + f20(0) + "\n" +
             f20(0, 0, 0, 0, 0) + "\n" + i10(5) + B10 + f20(T, 0) + B10 + i10(1, 1, 0))
@@ -96,13 +98,13 @@ deck.append("/GRNOD/NODE/1\nBOTTOM\n" + idlist(bottom))
 deck.append("/BCS/1\nCLAMP_BOTTOM\n#   trarot   Skew_id   Gnod_id\n   111 111" + i10(0, 1))
 deck.append("/GRNOD/PART/2\nTUBE_NODES\n" + i10(1))
 deck.append("/SURF/PART/3\nTUBE_SURF\n" + i10(1))
-deck.append("/INTER/TYPE7/1\nSELF_CONTACT\n" + i10(2, 3, 4, 0, 0) + B10 + i10(0, 0, 0, 0) + "\n" +
+deck.append("/INTER/TYPE7/1\nSELF_CONTACT\n" + i10(2, 3, a.istf, 0, 0) + B10 + i10(0, 0, 0, 0) + "\n" +
             f20(0, 0, 0) + B20 + i10(0) + "\n" +
             f20(0, 0, 0, 0) + i10(0, 0) + "\n" +
             f20(1, 0.15, 0.5 * T, 0, 0) + "\n" +
             "       000" + B20 + i10(0) + f20(0, 0, 0) + "\n" +
             i10(0, 0) + f20(0) + i10(0, 0, 0) + f20(0) + i10(0))
-deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, 0, 2, 0) + "\n" + f20(0, 0, 0) + "\n" +
+deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, 0, 2, 1) + "\n" + f20(0, 0, 0) + "\n" +
             f20(mass_g, 0, 0, -v) + "\n" + f20(0.0, 0.0, zw - 1.0))
 deck.append("/TH/RWALL/1\nWALL\nDEF\n" + i10(1))
 deck.append("/TH/NODE/2\nWALLNODE\nDEF\n" + i10(wall_node, 0))
@@ -116,6 +118,7 @@ os.makedirs(a.out, exist_ok=True)
 with open(os.path.join(a.out, f"{a.name}_0000.rad"), "w") as fh:
     fh.write("\n".join(deck) + "\n")
 
+dtcard = f"\n/DT/NODA/CST/0\n0.9 {a.dtmin_cst}" if a.dtmin_cst > 0 else ""
 eng = f"""/RUN/{a.name}/1
 {a.tend}
 /VERS/2024
@@ -128,7 +131,7 @@ eng = f"""/RUN/{a.name}/1
 /ANIM/ELEM/EPSP
 /ANIM/ELEM/VONM
 /ANIM/ELEM/THIC
-/PRINT/-2000
+/PRINT/-2000{dtcard}
 /RFILE/0
 1000000
 """
