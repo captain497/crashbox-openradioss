@@ -13,7 +13,7 @@ for c in cases:
     if not all(n in files for n in need):
         rows.append(dict(case=c, valid=False, note="missing output")); continue
     d = tempfile.mkdtemp()
-    for n in need + [f"campaign/{c}/runtime.txt"]:
+    for n in need + [f"campaign/{c}/runtime.txt", f"campaign/{c}/RUN_INFO.txt"]:
         if n in files:
             with open(os.path.join(d, os.path.basename(n)), "wb") as fh:
                 fh.write(subprocess.run(["git", "-C", repo, "show", f"{ref}:{n}"], capture_output=True).stdout)
@@ -25,6 +25,8 @@ for c in cases:
         rows.append(dict(case=c, valid=False, note="postprocess failed")); continue
     rt = open(os.path.join(d, "runtime.txt")).read().strip().split("=")[-1] if os.path.exists(os.path.join(d, "runtime.txt")) else ""
     m["engine_wall_s"] = rt
+    ri = os.path.join(d, "RUN_INFO.txt")
+    m["gh_run_id"] = open(ri).read().split()[1] if os.path.exists(ri) else ""
     rows.append(m)
 keys = []
 for r in rows:

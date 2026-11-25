@@ -25,11 +25,14 @@ p = argparse.ArgumentParser()
 p.add_argument("table"); p.add_argument("--out", default="surrogate_out")
 p.add_argument("--pcf", default="PCF_CFC600_kN")
 p.add_argument("--seed", type=int, default=2026)
+p.add_argument("--runs", default="", help="comma-separated GitHub run ids to accept (empty = all)")
 a = p.parse_args()
 os.makedirs(a.out, exist_ok=True)
 
 df = pd.read_csv(a.table)
 df = df[df["case"].str.match(r"^D\d+$") & (df["valid"].astype(str) == "True")].copy()
+if a.runs:
+    df = df[df["gh_run_id"].astype(str).isin(a.runs.split(","))]
 X_COLS = ["theta", "tc", "ncell", "beta"]
 TARGETS = {"SEA_kJ_per_kg": "SEA (kJ/kg)", a.pcf: "PCF (kN)"}
 X = df[X_COLS].astype(float).values
