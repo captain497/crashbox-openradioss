@@ -34,6 +34,7 @@ p.add_argument("--stroke_frac", type=float, default=0.75)  # run until this crus
 p.add_argument("--tend", type=float, default=0.0)      # end time (ms); 0 = from stroke
 p.add_argument("--dt_cst", type=float, default=0.0)    # /DT/NODA/CST target (ms); 0 = off
 p.add_argument("--anim", type=int, default=1)
+p.add_argument("--wall_slide", type=int, default=1)  # RWALL: 0 = sliding, 1 = tied (nodes stick to the impactor face)
 p.add_argument("--ishell", type=int, default=24)    # 24 = QEPH
 p.add_argument("--out", default=".")
 a = p.parse_args()
@@ -218,7 +219,7 @@ deck.append("/INTER/TYPE7/1\nSELF_CONTACT\n" + i10(2, 3, 4, 0, 0) + B10 + i10(0,
             f20(1, 0.15, 0.5 * min(T, a.tc if sh_core else T), 0, 0) + "\n" +
             "       000" + B20 + i10(0) + f20(0, 0, 0) + "\n" +
             i10(0, 0) + f20(0) + i10(0, 0, 0) + f20(0) + i10(0))
-deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, 0, 2, 1) + "\n" + f20(0, 0, 0) + "\n" +
+deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, a.wall_slide, 2, 1) + "\n" + f20(0, 0, 0) + "\n" +
             f20(mass_g, 0, 0, -v) + "\n" + f20(0.0, 0.0, zw - 1.0))
 deck.append("/TH/RWALL/1\nWALL\nDEF\n" + i10(1))
 deck.append("/TH/NODE/2\nWALLNODE\nDEF\n" + i10(wall_node, 0))
