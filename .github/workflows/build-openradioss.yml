@@ -1,0 +1,63 @@
+name: Build OpenRadioss from final AGPL source
+
+on:
+  workflow_dispatch:
+  push:
+    paths: [.github/workflows/build-openradioss.yml]
+
+env:
+  SRC_REPO: gabrielrussell/OpenRadioss
+  SRC_COMMIT: bad6688602d770e019b75773d2d5a48b4f9bd918   # last upstream commit, 25 Sep 2026
+  EXTLIB_REPO: xupeiwust/OpenRadioss_extlib
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tools
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q gfortran gcc g++ cmake make python3 perl
+          gfortran --version | head -1
+      - name: Get source at the final commit
+        run: |
+          git init OpenRadioss && cd OpenRadioss
+          git remote add origin https://github.com/$SRC_REPO
+          git fetch --depth 1 origin $SRC_COMMIT
+          git checkout -q FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$SRC_COMMIT"
+          git log -1 --format='%H %cd %s'
+      - name: Get external libraries (mirror of official extlib)
+        run: |
+          git clone --depth 1 https://github.com/$EXTLIB_REPO extlib_src
+          git -C extlib_src log -1 --format='extlib %H %cd %s'
+          cp -r extlib_src/extlib OpenRadioss/extlib
+          # tell the build the extlib is already present (version check only)
+          cp OpenRadioss/EXTLIB_VERSION.json OpenRadioss/extlib/EXTLIB_VERSION.json
+          ls OpenRadioss/extlib
+      - name: Build starter (open_reader)
+        run: |
+          cd OpenRadioss/starter
+          ./build_script.sh -arch=linux64_gf -release -open_reader -nt=4 2>&1 | tail -40
+          ls -l ../exec
+      - name: Build engine (SMP)
+        run: |
+          cd OpenRadioss/engine
+          ./build_script.sh -arch=linux64_gf -release -nt=4 2>&1 | tail -40
+          ls -l ../exec
+      - name: Package
+        run: |
+          mkdir -p pkg/OpenRadioss
+          cp -r OpenRadioss/exec OpenRadioss/hm_cfg_files pkg/OpenRadioss/
+          mkdir -p pkg/OpenRadioss/extlib && cp -r OpenRadioss/extlib/h3d pkg/OpenRadioss/extlib/
+          cp OpenRadioss/LICENSE.md OpenRadioss/COPYRIGHT.md pkg/OpenRadioss/
+          echo "source $SRC_REPO@$SRC_COMMIT ; extlib $EXTLIB_REPO@$(git -C extlib_src rev-parse HEAD)" > pkg/OpenRadioss/BUILD_INFO.txt
+          tar -C pkg -czf openradioss_linux64_gf.tgz OpenRadioss
+          sha256sum openradioss_linux64_gf.tgz | tee openradioss_linux64_gf.tgz.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openradioss-linux64-gf
+          path: |
+            openradioss_linux64_gf.tgz
+            openradioss_linux64_gf.tgz.sha256
+          retention-days: 30
