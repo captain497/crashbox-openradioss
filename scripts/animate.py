@@ -61,7 +61,7 @@ def draw(k):
     pc = Poly3DCollection(X[Q], facecolors=c, edgecolors=(0, 0, 0, 0.15), linewidths=0.1)
     ax.add_collection3d(pc)
     ax.set_xlim(-45, 45); ax.set_ylim(-45, 45); ax.set_zlim(0, 190)
-    ax.set_box_aspect((90, 90, 190), zoom=1.45); ax.view_init(elev=12, azim=35)
+    ax.set_box_aspect((90, 90, 190), zoom=1.1); ax.view_init(elev=12, azim=35)
     ax.set_axis_off()
     ax.set_title(f"{a.case}  t = {t[k]:.1f} ms\ncrush = {-(X[:, 2].max() - X0[:, 2].max()):.0f} mm", fontsize=9)
 
