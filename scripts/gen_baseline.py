@@ -25,6 +25,7 @@ p.add_argument("--mat", choices=["aa6061", "simpson_steel", "simpson_tab"], defa
 p.add_argument("--fric", type=float, default=0.15)     # self-contact friction
 p.add_argument("--wall_slide", type=int, default=0)    # RWALL: 0 sliding, 1 tied, 2 friction
 p.add_argument("--wall_fric", type=float, default=0.0)
+p.add_argument("--rc", type=float, default=0.0)        # corner radius of the mid-surface (mm), 0 = sharp corners
 p.add_argument("--anim", type=int, default=1)
 p.add_argument("--out", default=".")
 a = p.parse_args()
@@ -35,13 +36,29 @@ nz = max(2, round(L / a.esize))          # elements along length
 hs, hz = W / ns, L / nz
 
 per = []  # perimeter points, counter-clockwise: (x, y, side, frac)
-corners = [(-W/2, -W/2), (W/2, -W/2), (W/2, W/2), (-W/2, W/2)]
-for k in range(4):
-    x0, y0 = corners[k]
-    x1, y1 = corners[(k + 1) % 4]
-    for i in range(ns):
-        f = i / ns
-        per.append((x0 + f * (x1 - x0), y0 + f * (y1 - y0), k, f))
+if a.rc <= 0:
+    corners = [(-W/2, -W/2), (W/2, -W/2), (W/2, W/2), (-W/2, W/2)]
+    for k in range(4):
+        x0, y0 = corners[k]
+        x1, y1 = corners[(k + 1) % 4]
+        for i in range(ns):
+            f = i / ns
+            per.append((x0 + f * (x1 - x0), y0 + f * (y1 - y0), k, f))
+else:  # rounded corners: straight flat of W - 2 rc per side + 90 deg arc
+    R, Hh = a.rc, W / 2
+    nf = max(2, round((W - 2 * R) / a.esize)); na = max(2, round(0.5 * math.pi * R / a.esize))
+    dirs = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+    starts = [(-Hh + R, -Hh), (Hh, -Hh + R), (Hh - R, Hh), (-Hh, Hh - R)]
+    centres = [(Hh - R, -Hh + R), (Hh - R, Hh - R), (-Hh + R, Hh - R), (-Hh + R, -Hh + R)]
+    for k in range(4):
+        (x0, y0), (dx, dy) = starts[k], dirs[k]
+        for i in range(nf):
+            f = i / nf
+            per.append((x0 + dx * f * (W - 2 * R), y0 + dy * f * (W - 2 * R), k, f))
+        cx, cy = centres[k]; a0 = -math.pi / 2 + k * math.pi / 2
+        for i in range(na):
+            ang = a0 + 0.5 * math.pi * i / na
+            per.append((cx + R * math.cos(ang), cy + R * math.sin(ang), -1, 0.0))
 npr = len(per)
 
 def nid(i, j):
