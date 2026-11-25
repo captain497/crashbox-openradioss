@@ -1,0 +1,98 @@
+name: DOE campaign
+
+on:
+  workflow_dispatch:
+    inputs:
+      doe:
+        description: DOE csv in doe/
+        default: doe/doe_lhs60.csv
+      cases:
+        description: "Comma-separated case ids to run (empty = all)"
+        default: ""
+      extra_args:
+        description: Extra args for gen_crashbox.py (applied to all cases)
+        default: ""
+      build_run_id:
+        default: "45568072723"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        run: |
+          python3 - <<'PY' >> $GITHUB_OUTPUT
+          import csv, json
+          sel = [c.strip() for c in "${{ inputs.cases }}".split(",") if c.strip()]
+          rows = [r for r in csv.DictReader(open("${{ inputs.doe }}")) if not sel or r["case"] in sel]
+          inc = []
+          for r in rows:
+              core = r.get("core", "reentrant") or "reentrant"
+              args = f"--core {core}"
+              for k in ("theta", "tc", "ncell", "beta", "t", "width", "length"):
+                  if r.get(k): args += f" --{k} {r[k]}"
+              inc.append({"case": r["case"], "args": args})
+          print("matrix=" + json.dumps({"include": inc}))
+          PY
+
+  run:
+    needs: plan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: openradioss-linux64-gf
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ github.token }}
+      - name: Install solver
+        run: |
+          sha256sum -c openradioss_linux64_gf.tgz.sha256
+          tar -xzf openradioss_linux64_gf.tgz -C $HOME
+          pip install -q numpy matplotlib
+      - name: Generate, run, post-process
+        run: |
+          C=${{ matrix.case }}
+          mkdir -p work && python3 scripts/gen_crashbox.py --name $C --anim 0 ${{ matrix.args }} ${{ inputs.extra_args }} --out work
+          export OPENRADIOSS_PATH=$HOME/OpenRadioss
+          export RAD_CFG_PATH=$OPENRADIOSS_PATH/hm_cfg_files
+          export RAD_H3D_PATH=$OPENRADIOSS_PATH/extlib/h3d/lib/linux64
+          export LD_LIBRARY_PATH=$OPENRADIOSS_PATH/exec:$RAD_H3D_PATH:$LD_LIBRARY_PATH
+          export OMP_STACKSIZE=400m OMP_NUM_THREADS=$(nproc)
+          ulimit -s unlimited
+          cd work
+          $OPENRADIOSS_PATH/exec/starter_linux64_gf -i ${C}_0000.rad -np 1 > starter.log 2>&1 || true
+          grep -E "ERROR\(S\)|WARNING\(S\)" starter.log | head -2
+          S=$(date +%s)
+          $OPENRADIOSS_PATH/exec/engine_linux64_gf -i ${C}_0001.rad -nt $OMP_NUM_THREADS > engine.log 2>&1 || true
+          echo "engine_wall_s=$(( $(date +%s) - S ))" | tee runtime.txt
+          tail -4 engine.log
+          python3 ../scripts/post_crashbox.py . --case $C || echo "postprocess failed"
+          rm -f *.rst ${C}A0* ${C}_0000.rad
+      - name: Commit results
+        if: always()
+        run: |
+          C=${{ matrix.case }}
+          mkdir -p /tmp/res && cp -r work /tmp/res/$C
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for i in 1 2 3 4 5 6 7 8; do
+            git fetch -q origin results && git checkout -q -B results origin/results
+            rm -rf campaign/$C && mkdir -p campaign/$C && cp -r /tmp/res/$C/. campaign/$C/
+            echo "run ${{ github.run_id }} sha ${{ github.sha }}" > campaign/$C/RUN_INFO.txt
+            git add -f campaign/$C && git commit -qm "Campaign result $C" || break
+            git push -q origin results && break
+            sleep $((RANDOM % 20 + 5))
+          done
