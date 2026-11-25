@@ -21,6 +21,11 @@ p.add_argument("--tend", type=float, default=30.0)     # end time (ms)
 p.add_argument("--trigger", type=float, default=0.0)   # optional dent depth (mm), 0 = none
 p.add_argument("--istf", type=int, default=0)        # TYPE7 contact stiffness option
 p.add_argument("--dtmin_cst", type=float, default=0.0) # if >0: /DT/NODA/CST target time step (ms), adds small mass
+p.add_argument("--mat", choices=["aa6061", "simpson_steel"], default="aa6061")
+p.add_argument("--fric", type=float, default=0.15)     # self-contact friction
+p.add_argument("--wall_slide", type=int, default=0)    # RWALL: 0 sliding, 1 tied, 2 friction
+p.add_argument("--wall_fric", type=float, default=0.0)
+p.add_argument("--anim", type=int, default=1)
 p.add_argument("--out", default=".")
 a = p.parse_args()
 
@@ -76,16 +81,22 @@ def idlist(ids):
 rho, E, nu = 2.70e-3, 70000.0, 0.33
 A, B, n, C = 324.0, 114.0, 0.42, 0.002
 eps0 = 1.0e-3   # 1 /s in 1/ms
+if a.mat == "simpson_steel":
+    # Simpson & Kazanci (2020) mild steel tube: E=200 GPa, rho=7132 kg/m3, nu=0.28, sy=265 MPa,
+    # post-yield power law K=565 MPa, n=0.192. Johnson-Cook A,B,n fitted to max(265, 565*ep^0.192)
+    # over ep 0-0.6 (within 5% above ep=0.05). Rate effects off (quasi-static test).
+    rho, E, nu = 7.132e-3, 200000.0, 0.28
+    A, B, n, C = 265.0, 339.4, 0.541, 0.0
 mass_g = a.mass_kg * 1000.0
 v = a.v         # m/s == mm/ms
 
 deck = []
 deck.append("#RADIOSS STARTER\n/BEGIN\n" + f"{a.name:<80s}\n" + i10(2024) + "\n" +
             f"{'g':>20s}{'mm':>20s}{'ms':>20s}\n" + f"{'g':>20s}{'mm':>20s}{'ms':>20s}")
-deck.append("/TITLE\nAA6061-T6 square tube axial crush (placeholder geometry)")
+deck.append("/TITLE\nSquare tube axial crush")
 deck.append("/ANALY\n#    N2D3D     INTEG   IPARITH      ISUB\n" + i10(0, 0, 1, 0))
 deck.append("/RANDOM\n" + f20(1.0e-4))
-deck.append("/MAT/PLAS_JOHNS/1\nAA6061-T6\n" + f20(rho) + "\n" + f20(E, nu) + i10(0) + "\n" +
+deck.append("/MAT/PLAS_JOHNS/1\nTUBE_MAT\n" + f20(rho) + "\n" + f20(E, nu) + i10(0) + "\n" +
             f20(A, B, n, 0.0, 0.0) + "\n" + f20(C, eps0) + i10(1, 1) + f20(10.0, 0.0) + "\n" +  # Fsmooth=1, Fcut=10 kHz
             f20(0, 0, 0, 0))
 deck.append("/PROP/SHELL/1\nTUBE_SHELL\n" + i10(24, 0, 0, 0, 0) + B10 + f20(0) + "\n" +
@@ -101,16 +112,16 @@ deck.append("/SURF/PART/3\nTUBE_SURF\n" + i10(1))
 deck.append("/INTER/TYPE7/1\nSELF_CONTACT\n" + i10(2, 3, a.istf, 0, 0) + B10 + i10(0, 0, 0, 0) + "\n" +
             f20(0, 0, 0) + B20 + i10(0) + "\n" +
             f20(0, 0, 0, 0) + i10(0, 0) + "\n" +
-            f20(1, 0.15, 0.5 * T, 0, 0) + "\n" +
+            f20(1, a.fric, 0.5 * T, 0, 0) + "\n" +
             "       000" + B20 + i10(0) + f20(0, 0, 0) + "\n" +
             i10(0, 0) + f20(0) + i10(0, 0, 0) + f20(0) + i10(0))
-deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, 0, 2, 1) + "\n" + f20(0, 0, 0) + "\n" +
+deck.append("/RWALL/PLANE/1\nIMPACTOR\n" + i10(wall_node, a.wall_slide, 2, 1) + "\n" + f20(0, a.wall_fric, 0) + "\n" +
             f20(mass_g, 0, 0, -v) + "\n" + f20(0.0, 0.0, zw - 1.0))
 deck.append("/TH/RWALL/1\nWALL\nDEF\n" + i10(1))
 deck.append("/TH/NODE/2\nWALLNODE\nDEF\n" + i10(wall_node, 0))
 deck.append("/TH/PART/3\nTUBE_ENERGY\nDEF\n" + i10(1))
 # coarse-in-time nodal displacements of every tube node, written to the A-file, for animation
-deck.append("/ATH/NODE/4\nANIM_NODES\nDX        DY        DZ\n" +
+if a.anim: deck.append("/ATH/NODE/4\nANIM_NODES\nDX        DY        DZ\n" +
             "\n".join(i10(i, 0) for i, *_ in node_list))
 deck.append("/END")
 
