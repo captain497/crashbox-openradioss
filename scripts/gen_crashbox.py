@@ -174,8 +174,12 @@ bottom = sorted({nid(i, 0) for e in tube_edges + core_edges for i in e})
 wall_node = len(nodes) + 1
 zw = L + 0.5
 
-rho, E, nu = 2.70e-3, 70000.0, 0.33
-A, B, n, C = 324.0, 114.0, 0.42, 0.002
+# AA6061-T6 from the tensile tests of Aktas et al. (2023), Table 1 and Fig. 8b: rho 2700 kg/m3,
+# E 68.85 GPa, nu 0.33, yield 285 MPa. Johnson-Cook B, n fitted to values read off Fig. 8b
+# (true plastic strain 0-0.06; beyond that the power law is an extrapolation).
+# Strain-rate term C = 0.002 (eps0 = 1/s) from Lesuer-type AA6061-T6 data (assumed; weak rate effect).
+rho, E, nu = 2.70e-3, 68850.0, 0.33
+A, B, n, C = 285.0, 199.0, 0.532, 0.002
 eps0 = 1.0e-3
 mass_tube = rho * P * T * L
 mass_core = rho * core_len * a.tc * L
