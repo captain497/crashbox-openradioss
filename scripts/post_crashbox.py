@@ -51,6 +51,18 @@ m = dict(case=a.case, core=info["core"], theta=info["theta"] if cored else None,
          CFE=MCF / PCF, IE_parts_J=float(IE), HE_parts_J=float(HE),
          hourglass_ratio=float(HE / max(IE, 1e-9)),
          EA_vs_IE_mismatch=float((EA[-1] - IE) / max(IE, 1e-9)))
+# engine energy-balance error (column ERROR in the listing) up to the evaluation time
+import re
+errs = []
+outf = os.path.join(a.case_dir, f"{a.case}_0001.out")
+if os.path.exists(outf):
+    for line in open(outf, errors="ignore"):
+        mm = re.match(r"^\s+\d+\s+([0-9.]+)\s+[0-9.E+-]+\s+\w+\s+\d+\s+(-?[0-9.]+)%", line)
+        if mm and float(mm.group(1)) <= m["time_at_eval_ms"] + 1e-6:
+            errs.append(float(mm.group(2)))
+m["energy_error_max_abs_pct"] = max((abs(e) for e in errs), default=None)
+m["valid"] = bool(m["energy_error_max_abs_pct"] is not None and m["energy_error_max_abs_pct"] < 5.0
+                  and abs(m["EA_vs_IE_mismatch"]) < 0.05)
 json.dump(m, open(os.path.join(a.case_dir, f"{a.case}_metrics.json"), "w"), indent=2)
 np.savetxt(os.path.join(a.case_dir, f"{a.case}_force_disp.csv"), np.column_stack([t, d, F]),
            delimiter=",", header="time_ms,crush_mm,force_kN", comments="")
