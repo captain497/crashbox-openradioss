@@ -21,7 +21,7 @@ p.add_argument("--tend", type=float, default=30.0)     # end time (ms)
 p.add_argument("--trigger", type=float, default=0.0)   # optional dent depth (mm), 0 = none
 p.add_argument("--istf", type=int, default=0)        # TYPE7 contact stiffness option
 p.add_argument("--dtmin_cst", type=float, default=0.0) # if >0: /DT/NODA/CST target time step (ms), adds small mass
-p.add_argument("--mat", choices=["aa6061", "simpson_steel"], default="aa6061")
+p.add_argument("--mat", choices=["aa6061", "simpson_steel", "simpson_tab"], default="aa6061")
 p.add_argument("--fric", type=float, default=0.15)     # self-contact friction
 p.add_argument("--wall_slide", type=int, default=0)    # RWALL: 0 sliding, 1 tied, 2 friction
 p.add_argument("--wall_fric", type=float, default=0.0)
@@ -81,7 +81,7 @@ def idlist(ids):
 rho, E, nu = 2.70e-3, 70000.0, 0.33
 A, B, n, C = 324.0, 114.0, 0.42, 0.002
 eps0 = 1.0e-3   # 1 /s in 1/ms
-if a.mat == "simpson_steel":
+if a.mat in ("simpson_steel", "simpson_tab"):
     # Simpson & Kazanci (2020) mild steel tube: E=200 GPa, rho=7132 kg/m3, nu=0.28, sy=265 MPa,
     # post-yield power law K=565 MPa, n=0.192. Johnson-Cook A,B,n fitted to max(265, 565*ep^0.192)
     # over ep 0-0.6 (within 5% above ep=0.05). Rate effects off (quasi-static test).
@@ -96,7 +96,14 @@ deck.append("#RADIOSS STARTER\n/BEGIN\n" + f"{a.name:<80s}\n" + i10(2024) + "\n"
 deck.append("/TITLE\nSquare tube axial crush")
 deck.append("/ANALY\n#    N2D3D     INTEG   IPARITH      ISUB\n" + i10(0, 0, 1, 0))
 deck.append("/RANDOM\n" + f20(1.0e-4))
-deck.append("/MAT/PLAS_JOHNS/1\nTUBE_MAT\n" + f20(rho) + "\n" + f20(E, nu) + i10(0) + "\n" +
+if a.mat == "simpson_tab":
+    # exact Simpson & Kazanci curve as a table: sigma = max(265, 565 * ep^0.192) MPa
+    eps = [0.0, 0.0194, 0.03, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0, 1.5, 2.0]
+    deck.append("/FUNCT/10\nSIMPSON_STEEL_HARDENING\n" + "\n".join(f20(e, max(265.0, 565.0 * e ** 0.192)) for e in eps))
+    deck.append("/MAT/PLAS_TAB/1\nTUBE_MAT\n" + f20(rho) + "\n" + f20(E, nu, 0, 0, 0) + "\n" +
+                i10(1, 0) + f20(0, 0, 0) + B10 + i10(0) + "\n" + i10(0) + f20(0) + i10(0) + f20(0, 0) + "\n" +
+                i10(10) + "\n" + f20(1.0) + "\n" + f20(0.0))
+elif True: deck.append("/MAT/PLAS_JOHNS/1\nTUBE_MAT\n" + f20(rho) + "\n" + f20(E, nu) + i10(0) + "\n" +
             f20(A, B, n, 0.0, 0.0) + "\n" + f20(C, eps0) + i10(1, 1) + f20(10.0, 0.0) + "\n" +  # Fsmooth=1, Fcut=10 kHz
             f20(0, 0, 0, 0))
 deck.append("/PROP/SHELL/1\nTUBE_SHELL\n" + i10(24, 0, 0, 0, 0) + B10 + f20(0) + "\n" +
