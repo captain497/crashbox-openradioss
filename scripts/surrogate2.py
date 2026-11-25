@@ -25,6 +25,7 @@ p.add_argument("--xcols", default="theta,tc,t,trig,core_gap,core_bevel")
 p.add_argument("--pcf", default="PCF_CFC600_kN"); p.add_argument("--pcf_max", type=float, default=0.0)
 p.add_argument("--fixed", default="core=reentrant,ncell=3,beta=2.0,mat=aa6061")
 p.add_argument("--prefix", default="Q"); p.add_argument("--doe_out", required=True)
+p.add_argument("--mass_lo", type=float, default=0.0); p.add_argument("--mass_hi", type=float, default=0.0)  # optional mass window (g)
 p.add_argument("--seed", type=int, default=2026)
 a = p.parse_args()
 os.makedirs(a.out, exist_ok=True)
@@ -69,12 +70,21 @@ from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 xl = df[XC].astype(float).min().values; xu = df[XC].astype(float).max().values   # stay inside the sampled box
 sea_m, pcf_m = fitted["SEA_kJ_per_kg"], fitted[a.pcf]
+mass_m = None
+if a.mass_hi > 0:   # mass is a deterministic function of geometry; a GP reproduces it closely
+    mass_m = models(a.seed)["GP"].fit(X, df["mass_g"].astype(float).values)
+    print("mass GP R2 (train):", r2_score(df["mass_g"], mass_m.predict(X)))
+ncon = (1 if a.pcf_max > 0 else 0) + (2 if mass_m is not None else 0)
 class P(Problem):
-    def __init__(s): super().__init__(n_var=len(XC), n_obj=2, n_ieq_constr=1 if a.pcf_max > 0 else 0, xl=xl, xu=xu)
+    def __init__(s): super().__init__(n_var=len(XC), n_obj=2, n_ieq_constr=ncon, xl=xl, xu=xu)
     def _evaluate(s, x, out, *args, **kw):
         sp, pp = sea_m.predict(x), pcf_m.predict(x)
         out["F"] = np.column_stack([-sp, pp])
-        if a.pcf_max > 0: out["G"] = (pp - a.pcf_max).reshape(-1, 1)
+        G = []
+        if a.pcf_max > 0: G.append(pp - a.pcf_max)
+        if mass_m is not None:
+            mm = mass_m.predict(x); G += [a.mass_lo - mm, mm - a.mass_hi]
+        if G: out["G"] = np.column_stack(G)
 res = minimize(P(), NSGA2(pop_size=150), ("n_gen", 250), seed=a.seed, verbose=False)
 par = pd.DataFrame(res.X, columns=XC); par["SEA_pred"] = -res.F[:, 0]; par["PCF_pred"] = res.F[:, 1]
 par = par.sort_values("PCF_pred").reset_index(drop=True); par.to_csv(os.path.join(a.out, "pareto.csv"), index=False)
