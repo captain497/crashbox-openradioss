@@ -35,6 +35,15 @@ jobs:
           # tell the build the extlib is already present (version check only)
           cp OpenRadioss/EXTLIB_VERSION.json OpenRadioss/extlib/EXTLIB_VERSION.json
           ls OpenRadioss/extlib
+      - name: Patch for open_reader (it lacks the rigid-part to RBODY helper at this revision)
+        run: |
+          cd OpenRadioss/starter/source/devtools/hm_reader
+          # feature unused in our models (no rigid parts); report zero auto-generated rigid bodies
+          sed -i 's/^\( *\)call cpp_evaluate_rbodies_number_from_rigid_parts(NBRBODIES_PER_PART)/\1NBRBODIES_PER_PART(1:NPART) = 0/' hm_evaluate_rbodies_from_rigid_parts.F90
+          sed -i 's/^\( *\)call cpp_create_rbodies_from_rigid_parts(NEW_RBODY_TO_PART,NEW_RBODY_ID)/\1NEW_RBODY_TO_PART = 0; NEW_RBODY_ID = 0/' hm_create_rbodies_from_rigid_parts.F90
+          git -C ../../../.. diff --stat
+          git -C ../../../.. diff | tee ../../../../../openreader_patch.diff
+          grep -c "cpp_" hm_evaluate_rbodies_from_rigid_parts.F90 hm_create_rbodies_from_rigid_parts.F90 || true
       - name: Build starter (open_reader)
         run: |
           cd OpenRadioss/starter
@@ -55,6 +64,7 @@ jobs:
           cp -r OpenRadioss/exec OpenRadioss/hm_cfg_files pkg/OpenRadioss/
           mkdir -p pkg/OpenRadioss/extlib && cp -r OpenRadioss/extlib/h3d pkg/OpenRadioss/extlib/
           cp OpenRadioss/LICENSE.md OpenRadioss/COPYRIGHT.md pkg/OpenRadioss/
+          cp openreader_patch.diff pkg/OpenRadioss/
           echo "source $SRC_REPO@$SRC_COMMIT ; extlib $EXTLIB_REPO@$(git -C extlib_src rev-parse HEAD)" > pkg/OpenRadioss/BUILD_INFO.txt
           tar -C pkg -czf openradioss_linux64_gf.tgz OpenRadioss
           sha256sum openradioss_linux64_gf.tgz | tee openradioss_linux64_gf.tgz.sha256
