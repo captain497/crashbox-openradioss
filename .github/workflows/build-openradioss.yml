@@ -41,6 +41,8 @@ jobs:
           # feature unused in our models (no rigid parts); report zero auto-generated rigid bodies
           sed -i 's/^\( *\)call cpp_evaluate_rbodies_number_from_rigid_parts(NBRBODIES_PER_PART)/\1NBRBODIES_PER_PART(1:NPART) = 0/' hm_evaluate_rbodies_from_rigid_parts.F90
           sed -i 's/^\( *\)call cpp_create_rbodies_from_rigid_parts(NEW_RBODY_TO_PART,NEW_RBODY_ID)/\1NEW_RBODY_TO_PART = 0; NEW_RBODY_ID = 0/' hm_create_rbodies_from_rigid_parts.F90
+          # open_reader does not list the radioss2612 config folder used by this starter (CODVERS=2612)
+          sed -i 's/= "radioss2026:radioss2025:/= "radioss2612:radioss2026:radioss2025:/' ../../../../reader/source/cfgkernel/KERNEL/cfg_kernel.cpp
           git -C ../../../.. diff --stat
           git -C ../../../.. diff | tee ../../../../../openreader_patch.diff
           grep -c "cpp_" hm_evaluate_rbodies_from_rigid_parts.F90 hm_create_rbodies_from_rigid_parts.F90 || true
