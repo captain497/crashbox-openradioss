@@ -1,0 +1,68 @@
+name: Run crash box case
+
+on:
+  workflow_dispatch:
+    inputs:
+      case:
+        description: Case name
+        default: BASE
+      gen_args:
+        description: Extra arguments for scripts/gen_baseline.py
+        default: ""
+      build_run_id:
+        description: Run id of a successful "Build OpenRadioss" run
+        default: "45562977905"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: openradioss-linux64-gf
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ github.token }}
+      - name: Install solver
+        run: |
+          sha256sum -c openradioss_linux64_gf.tgz.sha256
+          tar -xzf openradioss_linux64_gf.tgz -C $HOME
+          cat $HOME/OpenRadioss/BUILD_INFO.txt
+          ls $HOME/OpenRadioss/exec
+          nproc; lscpu | grep "Model name"
+      - name: Generate deck
+        run: |
+          mkdir -p work && python3 scripts/gen_baseline.py --name ${{ inputs.case }} --out work ${{ inputs.gen_args }} | tee work/gen.log
+      - name: Run starter and engine
+        run: |
+          export OPENRADIOSS_PATH=$HOME/OpenRadioss
+          export RAD_CFG_PATH=$OPENRADIOSS_PATH/hm_cfg_files
+          export RAD_H3D_PATH=$OPENRADIOSS_PATH/extlib/h3d/lib/linux64
+          export LD_LIBRARY_PATH=$OPENRADIOSS_PATH/exec:$OPENRADIOSS_PATH/extlib/h3d/lib/linux64:$LD_LIBRARY_PATH
+          export OMP_STACKSIZE=400m
+          export OMP_NUM_THREADS=$(nproc)
+          ulimit -s unlimited
+          cd work
+          /usr/bin/time -v $OPENRADIOSS_PATH/exec/starter_linux64_gf -i ${{ inputs.case }}_0000.rad -np 1 > starter.stdout 2> starter.time || true
+          tail -30 ${{ inputs.case }}_0000.out || tail -30 starter.stdout
+          /usr/bin/time -v $OPENRADIOSS_PATH/exec/engine_linux64_gf -i ${{ inputs.case }}_0001.rad -nt $OMP_NUM_THREADS > engine.stdout 2> engine.time || true
+          tail -40 engine.stdout
+          grep -E "Elapsed|Maximum resident" starter.time engine.time
+          ls -la
+      - name: Save raw results to the results branch
+        if: always()
+        run: |
+          D=results/${{ inputs.case }}
+          mkdir -p /tmp/res && cp -r work /tmp/res/${{ inputs.case }}
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin results || true
+          if git rev-parse --verify origin/results >/dev/null 2>&1; then git checkout -B results origin/results; else git checkout --orphan results; git rm -rfq .; fi
+          rm -rf $D && mkdir -p $D && cp -r /tmp/res/${{ inputs.case }}/. $D/
+          echo "run ${{ github.run_id }} commit ${{ github.sha }} build ${{ inputs.build_run_id }}" > $D/RUN_INFO.txt
+          git add -f $D && git commit -qm "Raw results for ${{ inputs.case }} (run ${{ github.run_id }})" && git push origin results
