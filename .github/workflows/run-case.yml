@@ -19,8 +19,8 @@ permissions:
 
 jobs:
   run:
-    runs-on: ubuntu-latest
-    timeout-minutes: 340
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -62,7 +62,7 @@ jobs:
           M=$(grep -o "tube_mass=[0-9.]*" work/gen.log | cut -d= -f2)
           python3 scripts/postprocess.py work --case ${{ inputs.case }} --tube_mass_g $M | tee work/metrics.log
           python3 scripts/animate.py work --case ${{ inputs.case }} || true
-          rm -f work/*.rst work/${{ inputs.case }}A0*
+          rm -f work/*.rst work/${{ inputs.case }}A0* work/${{ inputs.case }}T01a
       - name: Save raw results to the results branch
         if: always()
         run: |
@@ -70,8 +70,11 @@ jobs:
           mkdir -p /tmp/res && cp -r work /tmp/res/${{ inputs.case }}
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin results || true
-          if git rev-parse --verify origin/results >/dev/null 2>&1; then git checkout -B results origin/results; else git checkout --orphan results; git rm -rfq .; fi
-          rm -rf $D && mkdir -p $D && cp -r /tmp/res/${{ inputs.case }}/. $D/
-          echo "run ${{ github.run_id }} commit ${{ github.sha }} build ${{ inputs.build_run_id }}" > $D/RUN_INFO.txt
-          git add -f $D && git commit -qm "Raw results for ${{ inputs.case }} (run ${{ github.run_id }})" && git push origin results
+          for i in 1 2 3 4 5 6 7 8; do
+            git fetch -q origin results && git checkout -q -B results origin/results
+            rm -rf $D && mkdir -p $D && cp -r /tmp/res/${{ inputs.case }}/. $D/
+            echo "run ${{ github.run_id }} commit ${{ github.sha }} build ${{ inputs.build_run_id }}" > $D/RUN_INFO.txt
+            git add -f $D && git commit -qm "Raw results for ${{ inputs.case }} (run ${{ github.run_id }})" || break
+            git push -q origin results && break
+            sleep $((RANDOM % 20 + 5))
+          done
