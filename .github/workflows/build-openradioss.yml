@@ -7,7 +7,7 @@ on:
 
 env:
   SRC_REPO: gabrielrussell/OpenRadioss
-  SRC_COMMIT: bad6688602d770e019b75773d2d5a48b4f9bd918   # last upstream commit, 25 Sep 2026
+  SRC_COMMIT: 157425b512ba5f2c94c203837f633fecc5543181   # upstream 28 May 2026, matches extlib v59 (final upstream commit bad66886 needs extlib v82, not mirrored)
   EXTLIB_REPO: xupeiwust/OpenRadioss_extlib
 
 jobs:
@@ -38,13 +38,17 @@ jobs:
       - name: Build starter (open_reader)
         run: |
           cd OpenRadioss/starter
+          set -o pipefail
           ./build_script.sh -arch=linux64_gf -release -open_reader -nt=4 2>&1 | tail -40
           ls -l ../exec
+          test -x ../exec/starter_linux64_gf
       - name: Build engine (SMP)
         run: |
           cd OpenRadioss/engine
+          set -o pipefail
           ./build_script.sh -arch=linux64_gf -release -nt=4 2>&1 | tail -40
           ls -l ../exec
+          test -x ../exec/engine_linux64_gf
       - name: Package
         run: |
           mkdir -p pkg/OpenRadioss
