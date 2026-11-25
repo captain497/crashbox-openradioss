@@ -6,7 +6,16 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          for u in https://github.com/OpenRadioss/OpenRadioss https://github.com/OpenRadioss https://api.github.com/repos/OpenRadioss/OpenRadioss https://api.github.com/orgs/OpenRadioss/repos https://openradioss.org/ https://www.openradioss.org/download/ ; do
-            echo "== $u"; curl -sSL -o page -w "%{http_code} %{url_effective}\n" "$u"; head -c 1500 page | tr -s '\n' ; echo; done
-          curl -sSL https://openradioss.org/ | grep -oiE 'href="[^"]+"' | sort -u | head -60
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -sSL https://www.siemens.com/en-us/products/simcenter/mechanical-simulation/radioss/rd/ | python3 -c "import sys,re,html;t=re.sub(r'<script.*?</script>|<style.*?</style>','',sys.stdin.read(),flags=re.S);t=html.unescape(re.sub(r'<[^>]+>','\n',t));print('\n'.join(l.strip() for l in t.splitlines() if len(l.strip())>3)[:6000])"
+          for r in gabrielrussell/OpenRadioss Lgt2x/OpenRadioss lililii124/openradioss-261001 xupeiwust/OpenRadioss_extlib; do
+            echo "== $r"
+            gh api repos/$r --jq '.description, .fork, .parent.full_name, .license.spdx_id, .default_branch, .pushed_at' || true
+            gh api repos/$r/commits?per_page=1 --jq '.[0].sha+" "+.[0].commit.committer.date+" "+.[0].commit.message[:80]' || true
+            gh release list -R $r --limit 5 || true
+          done
+          for r in gabrielrussell/OpenRadioss Lgt2x/OpenRadioss; do
+            echo "== $r has commit bad66886?"; gh api repos/$r/commits/bad6688602d770e019b75773d2d5a48b4f9bd918 --jq '.sha+" "+.commit.message[:60]' || true
+          done
