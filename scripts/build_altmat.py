@@ -65,7 +65,7 @@ for ax, geom in zip(axs, ("conventional tube", "auxetic (Q6M_S)")):
         ax.annotate(lab, (r["PCF_CFC600_kN"], r["SEA_kJ_per_kg"]), xytext=(5, 4), textcoords="offset points", fontsize=7, color="#333")
     b = byc["B000"]
     ax.axvline(b["PCF_CFC600_kN"], color="#999", lw=1, ls="--"); ax.text(b["PCF_CFC600_kN"] + 4, 2, "PCF limit\n(B000)", fontsize=7, color="#666")
-    ax.set_title(geom.capitalize(), fontsize=10, loc="left"); ax.set_xlabel("PCF, CFC600 (kN)")
+    ax.set_title(geom[0].upper() + geom[1:], fontsize=10, loc="left"); ax.set_xlabel("PCF, CFC600 (kN)")
 axs[0].set_ylabel("SEA to 140 mm (kJ/kg)")
 from matplotlib.lines import Line2D
 h = [Line2D([], [], marker="o", ls="", color=COL[k], label=v) for k, v in MAT.items()]
