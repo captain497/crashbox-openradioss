@@ -45,7 +45,8 @@ p.add_argument("--trig_z", type=float, default=12.0)   # trigger band centre, di
 p.add_argument("--trig_w", type=float, default=12.0)   # trigger band half-width (mm)
 p.add_argument("--core_gap", type=float, default=0.0)  # core recessed this far below the impact end (mm)
 p.add_argument("--core_bevel", type=float, default=0.0)  # extra recess growing linearly across the width (mm): staged core engagement
-p.add_argument("--mat", choices=["aa6061", "aa7075", "aa2024"], default="aa6061")  # alloy of tube and core
+p.add_argument("--mat", choices=["aa6061", "aa7075", "aa2024", "az31b", "ti64", "steel_sk"], default="aa6061")  # material of tube and core
+p.add_argument("--fail", type=int, default=0)  # 1 = add /FAIL/JOHNSON (only defined for az31b: Feng et al. 2014 locus)
 p.add_argument("--out", default=".")
 a = p.parse_args()
 
@@ -261,6 +262,17 @@ eps0 = 1.0e-3
 #   AA2024-T3: Lesuer (2000),     A 369, B 684, n 0.73, C 0.0083; rho 2780, E 73.1 GPa
 if a.mat == "aa7075": rho, E, nu, A, B, n, C = 2.81e-3, 71700.0, 0.33, 546.0, 678.0, 0.71, 0.024
 if a.mat == "aa2024": rho, E, nu, A, B, n, C = 2.78e-3, 73100.0, 0.33, 369.0, 684.0, 0.73, 0.0083
+# Non-aluminium alternatives (alternative-material study, 26 Nov 2026):
+#   AZ31B Mg sheet: Hasenpouth (2010) MASc thesis, Univ. Waterloo, JC A 225.171, B 168.346, n 0.242, C 0.013,
+#     reference rate 0.001 1/s (as tabulated by Sun 2022, arXiv:2207.11314); rho 1770, E 45 GPa, nu 0.35 (typical values).
+#     Isotropic von Mises JC: Mg twinning / tension-compression asymmetry is NOT represented.
+#   Ti-6Al-4V: Lesuer (2000) DOT/FAA/AR-00/25 "new" JC set A 1098, B 1092, n 0.93, C 0.014 (eps0 1/s), rho 4428;
+#     E 113.8 GPa, nu 0.342 typical handbook values (ASSUMED).
+#   Mild steel: Simpson & Kazanci (2020) tube card already validated in this project (gen_baseline simpson_steel):
+#     rho 7132, E 200 GPa, nu 0.28, A 265, B 339.4, n 0.541, no rate term.
+if a.mat == "az31b": rho, E, nu, A, B, n, C = 1.77e-3, 45000.0, 0.35, 225.171, 168.346, 0.242, 0.013; eps0 = 1.0e-6
+if a.mat == "ti64": rho, E, nu, A, B, n, C = 4.428e-3, 113800.0, 0.342, 1098.0, 1092.0, 0.93, 0.014
+if a.mat == "steel_sk": rho, E, nu, A, B, n, C = 7.132e-3, 200000.0, 0.28, 265.0, 339.4, 0.541, 0.0
 mass_tube = rho * T * sum(q_area(e) for e in sh_tube)
 mass_core = rho * a.tc * sum(q_area(e) for e in sh_core) + rho * TI * sum(q_area(e) for e in sh_in)
 v = a.v; mass_g = a.mass_kg * 1000.0
@@ -277,12 +289,18 @@ def prop(pid_, title, thick):
 deck = []
 deck.append("#RADIOSS STARTER\n/BEGIN\n" + f"{a.name:<80s}\n" + i10(2024) + "\n" +
             f"{'g':>20s}{'mm':>20s}{'ms':>20s}\n" + f"{'g':>20s}{'mm':>20s}{'ms':>20s}")
-deck.append(f"/TITLE\nAA6061-T6 crash box, core={a.core}")
+deck.append(f"/TITLE\n{a.mat.upper()} crash box, core={a.core}")
 deck.append("/ANALY\n" + i10(0, 0, 1, 0))
 deck.append("/RANDOM\n" + f20(1.0e-4))
 deck.append(f"/MAT/PLAS_JOHNS/1\n{a.mat.upper()}\n" + f20(rho) + "\n" + f20(E, nu) + i10(0) + "\n" +
             f20(A, B, n, 0.0, 0.0) + "\n" + f20(C, eps0) + i10(1, 1) + f20(10.0, 0.0) + "\n" +
             f20(0, 0, 0, 0))
+if a.fail:
+    # AZ31B Johnson-Cook fracture locus, Feng et al. (2014) via Sun (2022) Table 1: D1 -0.35, D2 0.6025, D3 -0.4537.
+    # D4 (rate) set to 0 because the reference rate of the fit is not confirmed (conservative quasi-static locus); D5 unused (isothermal).
+    # Ifail_sh = 2: shell element deleted when all 5 through-thickness points have failed.
+    if a.mat != "az31b": raise SystemExit("--fail only defined for az31b")
+    deck.append("/FAIL/JOHNSON/1\n" + f20(-0.35, 0.6025, -0.4537, 0.0, 0.0) + "\n" + f20(1.0e-3) + i10(2, 0) + f20(0.0, 0.0))
 deck.append(prop(1, "TUBE_SHELL", T))
 deck.append("/PART/1\nTUBE\n" + i10(1, 1, 0))
 if sh_core:
