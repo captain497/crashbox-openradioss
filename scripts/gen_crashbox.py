@@ -46,7 +46,7 @@ p.add_argument("--trig_w", type=float, default=12.0)   # trigger band half-width
 p.add_argument("--core_gap", type=float, default=0.0)  # core recessed this far below the impact end (mm)
 p.add_argument("--core_bevel", type=float, default=0.0)  # extra recess growing linearly across the width (mm): staged core engagement
 p.add_argument("--mat", choices=["aa6061", "aa7075", "aa2024", "az31b", "ti64", "steel_sk"], default="aa6061")  # material of tube and core
-p.add_argument("--fail", type=int, default=0)  # 1 = add /FAIL/JOHNSON (only defined for az31b: Feng et al. 2014 locus)
+p.add_argument("--fail", type=int, default=0)  # 1 = add /FAIL/JOHNSON (az31b: Feng et al. 2014; ti64: Lesuer 2000)
 p.add_argument("--out", default=".")
 a = p.parse_args()
 
@@ -299,8 +299,11 @@ if a.fail:
     # AZ31B Johnson-Cook fracture locus, Feng et al. (2014) via Sun (2022) Table 1: D1 -0.35, D2 0.6025, D3 -0.4537.
     # D4 (rate) set to 0 because the reference rate of the fit is not confirmed (conservative quasi-static locus); D5 unused (isothermal).
     # Ifail_sh = 2: shell element deleted when all 5 through-thickness points have failed.
-    if a.mat != "az31b": raise SystemExit("--fail only defined for az31b")
-    deck.append("/FAIL/JOHNSON/1\n" + f20(-0.35, 0.6025, -0.4537, 0.0, 0.0) + "\n" + f20(1.0e-3) + i10(2, 0) + f20(0.0, 0.0))
+    # Ti-6Al-4V: Lesuer (2000) Table 8 D1 -0.09, D2 0.25, D3 -0.50, D4 0.014 (reference rate 1 1/s), D5 unused (isothermal).
+    if a.mat == "az31b": D = (-0.35, 0.6025, -0.4537, 0.0, 0.0)
+    elif a.mat == "ti64": D = (-0.09, 0.25, -0.50, 0.014, 0.0)
+    else: raise SystemExit("--fail only defined for az31b and ti64")
+    deck.append("/FAIL/JOHNSON/1\n" + f20(*D) + "\n" + f20(1.0e-3) + i10(2, 0) + f20(0.0, 0.0))
 deck.append(prop(1, "TUBE_SHELL", T))
 deck.append("/PART/1\nTUBE\n" + i10(1, 1, 0))
 if sh_core:
