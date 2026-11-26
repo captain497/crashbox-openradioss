@@ -18,7 +18,7 @@ a = p.parse_args()
 out = a.out or a.case_dir
 
 # --- initial nodes and shells from the deck ---
-nodes, shells, sec = {}, [], None
+nodes, shells, sids, sec = {}, [], [], None
 with open(os.path.join(a.case_dir, f"{a.case}_0000.rad")) as f:
     for line in f:
         if line.startswith("/"):
@@ -29,7 +29,7 @@ with open(os.path.join(a.case_dir, f"{a.case}_0000.rad")) as f:
             nodes[int(line[:10])] = (float(line[10:30]), float(line[30:50]), float(line[50:70]))
         elif sec == "SHELL":
             v = [int(line[i:i + 10]) for i in range(0, 50, 10)]
-            shells.append(v[1:5])
+            shells.append(v[1:5]); sids.append(v[0])
 ath_ids, in_ath = [], False   # node ids listed under /ATH/NODE, in deck order
 with open(os.path.join(a.case_dir, f"{a.case}_0000.rad")) as f:
     for line in f:
@@ -44,6 +44,23 @@ X0 = np.array([nodes[i] for i in ath_ids])
 Q = np.array([[idx[n] for n in s] for s in shells])
 
 t, blocks = th.time_series(os.path.join(a.case_dir, f"{a.case}T01a"))
+# element deletion (fracture runs): time of each "RUPTURE ... SHELL ELEMENT NUMBER n" from the engine listing,
+# taken as the time of the next printed cycle line; deleted shells are hidden from that frame on.
+t_del = np.full(len(sids), np.inf)
+eng = os.path.join(a.case_dir, f"{a.case}_0001.out")
+if os.path.exists(eng):
+    pend, sidx = [], {e: k for k, e in enumerate(sids)}
+    for line in open(eng, errors="replace"):
+        if "RUPTURE" in line and "SHELL ELEMENT NUMBER" in line:
+            pend.append(int(line.split()[-1]))
+        else:
+            w = line.split()
+            if pend and len(w) > 3 and w[0].isdigit() and w[2] == "NODE" or (pend and len(w) > 3 and w[0].isdigit() and w[3] == "NODE"):
+                tt = float(w[1])
+                for e in pend:
+                    if e in sidx: t_del[sidx[e]] = min(t_del[sidx[e]], tt)
+                pend = []
+    print(f"deleted shells: {int(np.isfinite(t_del).sum())}")
 frames = []
 for b in blocks:
     D = b[-1].reshape(-1, 3)
@@ -66,7 +83,8 @@ def draw(k):
     X = frames[k]
     r = np.maximum(np.abs(X[:, 0]), np.abs(X[:, 1])) - r0
     c = cmap(np.clip(0.5 + r[Q].mean(axis=1) / 20.0, 0, 1))
-    pc = Poly3DCollection(X[Q], facecolors=c, edgecolors=(0, 0, 0, 0.15), linewidths=0.1)
+    keep = t_del > t[k]
+    pc = Poly3DCollection(X[Q][keep], facecolors=c[keep], edgecolors=(0, 0, 0, 0.15), linewidths=0.1)
     ax.add_collection3d(pc)
     ax.set_xlim(-45, 45); ax.set_ylim(-45, 45); ax.set_zlim(0, 190)
     ax.set_box_aspect((90, 90, 190), zoom=1.1); ax.view_init(elev=12, azim=35)
