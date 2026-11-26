@@ -32,6 +32,7 @@ g = next(k for k, r in enumerate(recs) if len(r) == 60 and struct.unpack(">5i", 
 ng = struct.unpack(">5i", recs[g][:20])[3]; ids = [struct.unpack(">i", recs[g + 1 + i][:4])[0] for i in range(ng)]; pos = {e: i for i, e in enumerate(ids)}
 tb, bb = th.time_series(fb); eps = np.array([np.asarray(blk[-1]).reshape(-1, 10)[:, 9] for blk in bb])
 nf = min(len(frames), len(eps)); frames, eps, t = frames[:nf], np.maximum.accumulate(eps[:nf], axis=0), t[:nf]
+import json; CABM = json.load(open(os.path.join(a.case_dir, f"{a.case}_info.json")))["cab_main"]
 DEF = [1, 2, 5, 6, 7]; field = {pp: eps[:, [pos[e] for e in eids[pp]]] for pp in DEF if pp in eids}
 cmap = plt.get_cmap("jet"); norm = matplotlib.colors.Normalize(0, a.vmax)
 style = {9: ("#c9ccd1", 0.55), 10: ("#c9ccd1", 0.07), 11: ("#9ecae1", 0.15), 12: ("#1a1a1a", 1.0), 13: ("#f2b880", 1.0), 14: ("#ffffff", 0.85)}
@@ -41,7 +42,7 @@ ALL = order; FRONT = [5, 6, 1, 2, 7]
 SHOTS = {"side": ("Side view", 2, -90, (-3900, 400), (-1300, 1300), (-300, 1700), 1.15, ALL),
          "iso": ("Front three-quarter view", 18, -50, (-3900, 400), (-1300, 1300), (-300, 1700), 1.1, ALL),
          "front": ("Front structure: bumper, crash boxes, rails", 30, -130, (-1000, 150), (-750, 750), (250, 850), 1.0, [5, 6, 1, 2]),
-         "cabin": ("Occupant, belt and airbag (doors hidden)", 10, -75, (-2400, -300), (-600, 1000), (200, 1300), 1.1, [9, 11, 13, 14, 7, 5, 6, 1, 2])}
+         "cabin": ("Occupant, belt and airbag (camera moves with the car)", 10, -75, (-2400, -300), (-600, 1000), (200, 1300), 1.1, [9, 11, 13, 14, 7, 5, 6, 1, 2])}
 BG = "#0d1117"
 fig = plt.figure(figsize=(5.4, 9.6), dpi=200, facecolor=BG)
 ax = fig.add_axes([0.0, 0.18, 1.0, 0.64], projection="3d"); ax.set_facecolor(BG)
@@ -59,6 +60,8 @@ fig.text(0.5, 0.045, f"OpenRadioss explicit FE run (own solver build). Saved sol
 def draw(shot, k):
     lab, el, az, xl, yl, zl, zoom, parts = SHOTS[shot]
     ax.cla(); ax.set_facecolor(BG); X = X0 + frames[k]
+    if shot == "cabin":   # this camera rides with the cabin so the occupant and airbag stay in frame
+        dx = frames[k][CABM - 1, 0]; xl = (xl[0] + dx, xl[1] + dx)
     for pp in [q for q in order if q in parts]:
         if pp not in sh: continue
         if shot == "cabin" and pp == 9: continue
@@ -67,7 +70,8 @@ def draw(shot, k):
         else:
             col, al = style[pp]; pc = Poly3DCollection(X[q], facecolor=col, edgecolor=(0, 0, 0, 0.1 if al > 0.5 else 0.0), linewidths=0.08, alpha=al)
         ax.add_collection3d(pc)
-    yy, zz = np.meshgrid(np.linspace(*yl, 2), np.linspace(zl[0], zl[1], 2)); ax.plot_surface(np.full_like(yy, 4.0), yy, zz, color="#6b6f76", alpha=0.3)
+    yy, zz = np.meshgrid(np.linspace(*yl, 2), np.linspace(zl[0], zl[1], 2))
+    if xl[1] >= 4: ax.plot_surface(np.full_like(yy, 4.0), yy, zz, color="#6b6f76", alpha=0.3)
     gx, gy = np.meshgrid(np.linspace(xl[0], 4, 2), np.linspace(*yl, 2))
     if shot == "side": ax.plot_surface(gx, gy, np.full_like(gx, -300.0), color="#2a2f36", alpha=0.9)
     ax.set_xlim(*xl); ax.set_ylim(*yl); ax.set_zlim(*zl); ax.set_box_aspect((xl[1] - xl[0], yl[1] - yl[0], zl[1] - zl[0]), zoom=zoom)
