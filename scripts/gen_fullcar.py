@@ -190,14 +190,14 @@ def prop(pid, title, t, nip=5, ish=24):
 pdef = {1: ("BOX_TUBE", 1, 5), 2: ("BOX_CORE", 1, 5), 5: ("BUMPER", 2, 5), 6: ("RAILS", 2, 5), 7: ("BONNET_FENDERS", 2, 3),
         CAB: ("CABIN_RIGID", 3, 1), 10: ("LEFT_DOORS_RIGID", 3, 1), 11: ("WINDSCREEN_RIGID", 3, 1), 12: ("WHEELS_RIGID", 3, 1),
         13: ("OCCUPANT", 5, 1), 14: ("AIRBAG", 4, 1)}
-eid = 0
+eid = 0; shell_ids = {}
 for pp in sorted(shells):
     if pp == 2 and not shells[2]: continue
     title, mid, nip = pdef[pp]
     d.append(prop(pp, title, thick[pp], nip)); d.append(f"/PART/{pp}\n{title}\n" + i10(pp, mid, 0))
     lines = []
     for q in shells[pp]:
-        eid += 1; lines.append(i10(eid, *q))
+        eid += 1; lines.append(i10(eid, *q)); shell_ids.setdefault(pp, []).append(eid)
     d.append(f"/SHELL/{pp}\n" + "\n".join(lines))
 # rigid bodies
 def rbody(k, title, main, mass, nodes_, J):
@@ -241,12 +241,15 @@ d.append("/TH/NODE/2\nCAB_OCC\nDEF\n" + i10(cabM, 0) + "\n" + i10(occM, 0))
 d.append("/TH/SPRING/3\nBELT\nDEF\n" + i10(900001, 900002))
 d.append("/TH/MONV/4\nCUSHION\nDEF\n" + i10(1))
 d.append("/TH/PART/5\nPART_ENERGY\nDEF\n" + "\n".join(i10(k) for k in front_parts))
+def_parts = [1, 2, 5, 6, 7]   # deformable shells: crash box wall/core, bumper, rails, front panels
+shl = [e for pp in def_parts for e in shell_ids.get(pp, [])]
+d.append("/BTH/SHEL/10\nANIM_SHELLS\nPLAS      STRESS\n" + "\n".join(i10(e) for e in shl))
 d.append("/ATH/NODE/9\nANIM_NODES\nDX        DY        DZ\n" + "\n".join(i10(k, 0) for k in range(1, len(coords) + 1)))
 d.append("/END")
 os.makedirs(a.out, exist_ok=True)
 open(os.path.join(a.out, f"{a.name}_0000.rad"), "w").write("\n".join(d) + "\n")
 open(os.path.join(a.out, f"{a.name}_0001.rad"), "w").write(
-    f"/RUN/{a.name}/1\n{a.tend}\n/VERS/2024\n/TFILE/4\n0.02\n/ATFILE/4\n{a.tend / 50:.3f}\n/PRINT/-5000\n/DT/NODA/CST/0\n0.9 {a.dt_cst}\n/RFILE/0\n10000000\n")
+    f"/RUN/{a.name}/1\n{a.tend}\n/VERS/2024\n/TFILE/4\n0.02\n/ATFILE/4\n{a.tend / 50:.3f}\n/BTFILE/4\n{a.tend / 50:.3f}\n/PRINT/-5000\n/DT/NODA/CST/0\n0.9 {a.dt_cst}\n/RFILE/0\n10000000\n")
 json.dump(info, open(os.path.join(a.out, f"{a.name}_info.json"), "w"), indent=1, default=float)
 print(json.dumps(dict(nodes=len(coords), shells={k: len(v) for k, v in shells.items()}, cab_mass_kg=cab_mass / 1000,
                       part_mass_kg={k: round(v / 1000, 3) for k, v in pmass.items()})))
