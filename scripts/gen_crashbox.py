@@ -382,6 +382,10 @@ info = dict(vars(a), n_nodes=len(nodes) + (2 if a.car else 1), n_shell_tube=len(
 with open(os.path.join(a.out, f"{a.name}_info.json"), "w") as fh:
     json.dump(info, fh, indent=2)
 with open(os.path.join(a.out, f"{a.name}_section.json"), "w") as fh:
-    json.dump(dict(points=coords2, tube=tube_edges + inner_edges, core=core_edges), fh)
+    json.dump(dict(points=coords2, tube=tube_edges + inner_edges, core=core_edges,
+                   # exact (un-snapped) core rib segments and their top z, for CAD export
+                   core_segments=[[list(q0), list(q1)] for q0, q1 in segs],
+                   core_top=[L - a.core_gap - a.core_bevel * (0.5 * (q0[0] + q1[0]) + H) / W for q0, q1 in segs],
+                   half_width=H, inner_half_width=Hi, length=L), fh)
 print(json.dumps({k: info[k] for k in ("n_nodes", "n_shell_tube", "n_shell_core", "mass_tube_g",
                                        "mass_core_g", "mass_total_g", "tend_ms")}))
