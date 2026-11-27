@@ -53,7 +53,7 @@ In LS-DYNA, results come out in those units (e.g. rigid wall force in N, time in
 ## Simplifications in the CAD (the FE files are exact)
 - The crush trigger dent of the auxetic design (0.0061 mm amplitude) is in the meshes but left out of the CAD.
 - In the CAD each core rib stops at its exact recess height. The mesh stops at the nearest 2.5 mm element row.
-- At rib-to-rib and rib-to-wall junctions the solid fuses the material, while the shell model overlaps it. So the solid mass is 0 to 0.8% below the run mass (column below).
+- At rib-to-rib and rib-to-wall junctions the solid fuses the material, while the shell model overlaps it. So the solid mass is up to 1.5% below the run mass (column below); the tube-only designs match exactly.
 
 ## The 22 cases
 | Case | Geometry | Material | Fracture | t tube mm | t core mm | Nodes | Shells | Run mass g | CAD solid mass vs run % | Checks |
